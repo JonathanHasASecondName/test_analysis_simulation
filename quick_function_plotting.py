@@ -9,17 +9,18 @@ sr = 2000
 ts = 1.0/sr
 t = np.arange(0,1,ts)
 
-freq = 2
-x = 3*np.cos(2*np.pi*freq*t)+np.cos(3*np.pi*freq*t)
+x = np.sin(1*np.pi*2*t)
+
 
 plt.figure(figsize = (8, 6))
 plt.plot(t, x, 'r')
 plt.ylabel('Amplitude')
 
 plt.show()
+ts = 1.0/sr
+t = np.arange(0,1,ts)
 
-
-X = fft(x)
+X = 3*np.sin()
 N = len(X)
 n = np.arange(N)
 T = N/sr
