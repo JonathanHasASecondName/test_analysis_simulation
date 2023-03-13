@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from gps_coords import haversine
+
 def plot_mic_array():
     darray = np.loadtxt("data/config.txt")
 
