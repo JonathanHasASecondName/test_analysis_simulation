@@ -25,10 +25,20 @@ def plot_height_drone():
     return
 
 def plot_noise_mics():
+
     for i in range(1, 6):
-        dp = pd.read_csv("data/GPS_D"+str(i) +"F1.csv")
+        dp = pd.read_csv("data/Array_D" + str(i) + "F1.csv")
+        print(dp)
+
+        x = np.linspace(0,15000, len(dp)+1)
+
+        plt.plot(x, dp)
+        plt.title("Drone" + str(i))
+        plt.show()
+    return
 
 
 
-plot_height_drone()
+#plot_height_drone()
+plot_noise_mics()
 
