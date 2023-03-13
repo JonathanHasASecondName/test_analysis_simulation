@@ -2,7 +2,7 @@ import csv
 import wave
 import numpy as np
 import matplotlib.pyplot as plt
-
+# bruh:w
 # Load the main file
 with open('main_file.csv', newline='') as f:
     reader = csv.reader(f)
