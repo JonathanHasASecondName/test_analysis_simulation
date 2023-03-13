@@ -24,5 +24,11 @@ def plot_height_drone():
     plt.show()
     return
 
+def plot_noise_mics():
+    for i in range(1, 6):
+        dp = pd.read_csv("data/GPS_D"+str(i) +"F1.csv")
+
+
+
 plot_height_drone()
 
