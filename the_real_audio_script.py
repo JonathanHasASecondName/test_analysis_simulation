@@ -16,14 +16,11 @@ t = np.arange(0,15,1/50000)
 plt.plot(t,data,"b")
 plt.show()
 
-# assume we have columns 'time' and 'value'
-df = pd.read_csv('recording.csv')
-
 # compute sample rate, assuming times are in seconds
 times = df['time'].values
 n_measurements = len(times)
 timespan_seconds = times[-1] - times[0]
-sample_rate_hz = int(n_measurements / timespan_seconds)
+sample_rate_hz = 50000
 
 # write data
 data = df['value'].values
