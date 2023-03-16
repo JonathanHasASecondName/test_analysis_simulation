@@ -5,12 +5,14 @@ import scipy.io.wavfile as wavfile
 import matplotlib.pyplot as plt
 import soundfile as sf
 
+volume = 10000
+
 with open("data/Array_D1F1.csv", 'r') as f:
     data = list(csv.reader(f, delimiter=","))
 
 data = np.array(data, float)
 data = data[0,:]
-data = data[:len(data)-1]*10000
+data = data[:len(data)-1]*volume
 
 print("Data OK")
 
