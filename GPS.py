@@ -22,7 +22,9 @@ def plot_mic_array_corrected():
     x = -1*darray[:, -2]
     y = darray[:, -1]
     plt.scatter(x,y)
-    plt.scatter(x[0, 5, 6, 16, 20, 31, 40, 45, 53, 62, 63], y[0, 5, 6, 16, 20, 31, 40, 45, 53, 62, 63], "red")
+    broken=([0,40,48,2,34,59,5,45,46,55,63])
+    plt.scatter(x[broken], y[broken], c="red")
+    plt.scatter(x[57], y[57], c="green")
     plt.ylabel("y")
     plt.xlabel("x")
     plt.show()
@@ -64,4 +66,4 @@ def plot_all_flights():
     plt.show()
 
 plot_all_flights()
-plot_mic_array()
+plot_mic_array_corrected()
