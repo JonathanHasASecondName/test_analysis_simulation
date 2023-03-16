@@ -1,7 +1,6 @@
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
-import pandas as pd
 import soundfile as sf
 
 with open("data/Array_D1F1.csv", 'r') as f:
