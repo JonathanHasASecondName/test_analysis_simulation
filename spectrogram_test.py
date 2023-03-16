@@ -19,6 +19,7 @@ plt.xlabel('Time (s)')
 plt.ylabel('Amplitude')
 plt.tight_layout()
 """
+
 if True:
     f, t, Sxx = scipy.signal.spectrogram(
         x=x,

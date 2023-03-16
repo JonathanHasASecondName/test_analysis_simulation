@@ -13,7 +13,7 @@ def dft(x):
         transform.append(calculate_term(x, i))
     return transform
 
-# sampling rate
+# sampling rate :)
 sr = 1
 # sampling interval
 ts = 1.0/sr
