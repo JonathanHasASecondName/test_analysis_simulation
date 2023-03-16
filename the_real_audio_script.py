@@ -7,7 +7,7 @@ import soundfile as sf
 
 volume = 10000
 
-with open("data/Array_D1F1.csv", 'r') as f:
+with open("data/Array_D2F1.csv", 'r') as f:
     data = list(csv.reader(f, delimiter=","))
 
 data = np.array(data, float)
@@ -40,7 +40,7 @@ plt.xlabel('Time [sec]')
 
 plt.subplot(2,1,2)
 plt.title("Spectrogram")
-plt.ylim([0,1000])
+plt.ylim([0,2500])
 plt.pcolormesh(times, frequencies, spectrogram)
 plt.ylabel('Frequency [Hz]')
 plt.xlabel('Time [sec]')
