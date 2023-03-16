@@ -7,10 +7,24 @@ from gps_coords import haversine
 def plot_mic_array():
     darray = np.loadtxt("data/config.txt")
 
-    x = darray[:, -2]
+    x = -1*darray[:, -2]
     y = darray[:, -1]
 
     plt.scatter(x,y)
+    plt.ylabel("y")
+    plt.xlabel("x")
+    plt.show()
+    return
+
+def plot_mic_array_corrected():
+    darray = np.loadtxt("data/config.txt")
+
+    x = -1*darray[:, -2]
+    y = darray[:, -1]
+    plt.scatter(x,y)
+    plt.scatter(x[0, 5, 6, 16, 20, 31, 40, 45, 53, 62, 63], y[0, 5, 6, 16, 20, 31, 40, 45, 53, 62, 63], "red")
+    plt.ylabel("y")
+    plt.xlabel("x")
     plt.show()
     return
 
@@ -30,7 +44,6 @@ def convert_coords(filename):
     data = np.genfromtxt(filename, delimiter=',')
     converted = np.copy(data[:, :3])
     for index, i in enumerate(converted[:, 1:3]):
-        print(i, haversine(i))
         converted[index, 1:3] = haversine(i)
 
     x, y = converted[:,1], converted[:, 2]
@@ -50,5 +63,5 @@ def plot_all_flights():
         axs[i // 2, i % 2].plot(x, y)
     plt.show()
 
-convert_coords("data/GPS_D5F1.csv")
 plot_all_flights()
+plot_mic_array()
