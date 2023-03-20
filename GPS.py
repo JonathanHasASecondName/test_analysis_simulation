@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 from gps_coords import haversine
 
@@ -52,6 +53,16 @@ def convert_coords(filename):
 
     return x, y
 
+def update(num, x, y, line):
+    line.set_data(x[:num], y[:num])
+    # line.axes.axis([0, 10, 0, 1])
+    return line, 
+
+def plot_one_flight(flightnum):
+    x, y = convert_coords("data/GPS_D{}F1.csv".format(flightnum))
+    plt.plot(x,y, "r")
+    plt.show()
+
 def plot_all_flights():
     """ 
     BAD FUNCTION 
@@ -62,8 +73,24 @@ def plot_all_flights():
     fig, axs = plt.subplots(3, 2)
     for i in range(5):
         x, y = convert_coords("data/GPS_D{}F1.csv".format(i+1))            
-        axs[i // 2, i % 2].plot(x, y)
+        index = i // 2, i % 2
+        axs[index].plot(x, y)
+        axs[index].set_xlim([-300, 300])
+        axs[index].set_ylim([-300, 300])
     plt.show()
 
-plot_all_flights()
-plot_mic_array_corrected()
+def animate_flight(filename):
+    x, y = convert_coords(filename)
+
+    fig, ax = plt.subplots()
+    line, = ax.plot(x, y, color='k')
+    ax.set_xlim([-300, 300])
+    ax.set_ylim([-300, 300])
+
+    ani = animation.FuncAnimation(fig, update, len(x), fargs=[x, y, line], interval=2, blit=True) # Freely inspired from StackOverflow
+    plt.show()
+ 
+# plot_one_flight(1)
+# plot_all_flights()
+# plot_mic_array_corrected()
+animate_flight("data/GPS_D2F1.csv")
