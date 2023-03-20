@@ -72,7 +72,7 @@ def plot_all_flights():
 
     fig, axs = plt.subplots(3, 2)
     for i in range(5):
-        x, y = convert_coords("data/GPS_D{}F1.csv".format(i+1))            
+        x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(i+1))            
         index = i // 2, i % 2
         axs[index].plot(x, y)
         axs[index].set_xlim([-300, 300])
@@ -87,10 +87,10 @@ def animate_flight(filename):
     ax.set_xlim([-300, 300])
     ax.set_ylim([-300, 300])
 
-    ani = animation.FuncAnimation(fig, update, len(x), fargs=[x, y, line], interval=2, blit=True) # Freely inspired from StackOverflow
+    ani = animation.FuncAnimation(fig, update, len(x), fargs=[x, y, line], interval=20, blit=True) # Freely inspired from StackOverflow
     plt.show()
  
 # plot_one_flight(1)
-# plot_all_flights()
+plot_all_flights()
 # plot_mic_array_corrected()
-animate_flight("data/GPS_D2F1.csv")
+# animate_flight("data/Drone1_Flight1/GPS_D1F1.csv")
