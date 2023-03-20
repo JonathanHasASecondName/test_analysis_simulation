@@ -58,7 +58,7 @@ f_main, t_main, spectrogram_main = generate_spectrogram_data(main_data, 50000)
 if subtract_noise.lower() == 'y':
     spectrogram_main = spectrogram_main - avg_noise_level.reshape(-1, 1)
 
-# Crop spectrogram data
+# Crop spectrogram data o
 print(t_main.shape)
 print(f_main.shape)
 print(spectrogram_main.shape)
