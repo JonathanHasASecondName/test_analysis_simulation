@@ -56,7 +56,7 @@ def convert_coords(filename):
 def update(num, x, y, line):
     line.set_data(x[:num], y[:num])
     # line.axes.axis([0, 10, 0, 1])
-    return line, 
+    return line,
 
 def plot_one_flight(flightnum):
     x, y = convert_coords("data/GPS_D{}F1.csv".format(flightnum))
@@ -64,15 +64,15 @@ def plot_one_flight(flightnum):
     plt.show()
 
 def plot_all_flights():
-    """ 
-    BAD FUNCTION 
+    """
+    BAD FUNCTION
     only works with specific filenames and directory structure
     but it gets the job done ¯\_(ツ)_/¯
     """
 
     fig, axs = plt.subplots(3, 2)
     for i in range(5):
-        x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(i+1))            
+        x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(i+1))
         index = i // 2, i % 2
         axs[index].plot(x, y)
         axs[index].set_xlim([-300, 300])
@@ -89,8 +89,20 @@ def animate_flight(filename):
 
     ani = animation.FuncAnimation(fig, update, len(x), fargs=[x, y, line], interval=20, blit=True) # Freely inspired from StackOverflow
     plt.show()
- 
-# plot_one_flight(1)
-plot_all_flights()
-# plot_mic_array_corrected()
-# animate_flight("data/Drone1_Flight1/GPS_D1F1.csv")
+
+#plot_one_flight(1)
+#plot_all_flights()
+#plot_mic_array_corrected()
+#animate_flight("data/Drone1_Flight1/GPS_D1F1.csv")
+
+def closest_point(flightnum):
+    x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
+
+    sub_x = x - (-0.0279)
+    sub_y = y - (-1.6998)
+    sub_x= np.isnan(sub_x)
+    sub_y = np.isnan(sub_y)
+    dist = np.sqrt(np.square(sub_x)+np.square(sub_y))
+    print(min(dist))
+    return min(dist)
+closest_point(4)
