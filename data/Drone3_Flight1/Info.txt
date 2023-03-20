@@ -1,0 +1,5 @@
+Start_time_Array: 0 days 00:03:04.195000
+Start_time_GPS: 0 days 00:01:40
+
+Chosen_start_time_Array: 35 seconds
+Chosen_end_time_Array: 50 seconds
