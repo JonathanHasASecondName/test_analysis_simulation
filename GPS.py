@@ -106,25 +106,20 @@ def closest_point(flightnum):
     x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
     data = np.genfromtxt("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum),delimiter=",")
 
-    #data = np.delete(data, 0, axis=0)
+    data = np.delete(data, 0, axis=0)
+    x= np.delete(x, 0, axis=0)
+    y = np.delete(y, 0, axis=0)
 
-    data[0,0]=0
     sub_x = x - (-0.0279)
     sub_y = y - (-1.6998)
-    sub_x[0] = 0
-    sub_y[0] = 0
-    # sub_x = np.isnan(sub_x)
-    # sub_y = np.isnan(sub_y)
     dist = np.sqrt(np.square(sub_x) + np.square(sub_y))
+    list= dist.tolist()
     plt.figure()
-    print((dist))
-    print((data))
-
-    plt.plot(data[:, 0] - time_difference[1],np.transpose(dist))
-    plt.axvline(x=0, color='b', label='Start')
-    plt.axvline(x=15000, color='r', label='End')
+    plt.plot(data[:, 0],dist)
     plt.show()
-    print(min(dist))
+    print(min(dist)) # this is the closest distance it gets to microphone 16
+    closest_time = data[list.index(min(dist)),0] # this is the corresponding time of that event
 
+    return closest_time
 
-closest_point(3)
+print(closest_point(1))
