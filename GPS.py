@@ -106,13 +106,11 @@ def closest_point(flightnum):
     x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
     data = np.genfromtxt("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum),delimiter=",")
 
-    #data = np.delete(data, 0, axis=0)
-
-    data[0,0]=0
+    data = np.delete(data, 0, axis=0)
+    x = np.delete(x, 0, axis=0)
+    y = np.delete(y, 0, axis=0)
     sub_x = x - (-0.0279)
     sub_y = y - (-1.6998)
-    sub_x[0] = 0
-    sub_y[0] = 0
     # sub_x = np.isnan(sub_x)
     # sub_y = np.isnan(sub_y)
     dist = np.sqrt(np.square(sub_x) + np.square(sub_y))
