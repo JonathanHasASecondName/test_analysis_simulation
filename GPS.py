@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -36,6 +37,11 @@ def plot_noise_mics():
         plt.title("Drone" + str(i))
         plt.show()
     return
+
+def distance_drone(x_1, y_1, z_1, x_2, y_2, z_2):
+    return math.sqrt((x_1 - x_2) ** 2 + (y_1 - y_2) ** 2 + (z_1 - z_2) ** 2 )
+
+
 
 
 
