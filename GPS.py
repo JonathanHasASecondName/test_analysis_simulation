@@ -112,10 +112,17 @@ def closest_point(flightnum):
 
     sub_x = x - (-0.0279)
     sub_y = y - (-1.6998)
+
+
     dist = np.sqrt(np.square(sub_x) + np.square(sub_y))
     list= dist.tolist()
     plt.figure()
-    plt.plot(data[:, 0],dist)
+    print((dist))
+    print((data))
+
+    plt.plot(data[:, 0] - time_difference[1],np.transpose(dist))
+    plt.axvline(x=0, color='b', label='Start')
+    plt.axvline(x=15000, color='r', label='End')
     plt.show()
     print(min(dist)) # this is the closest distance it gets to microphone 16
     closest_time = data[list.index(min(dist)),0] # this is the corresponding time of that event
@@ -123,3 +130,5 @@ def closest_point(flightnum):
     return closest_time
 
 print(closest_point(1))
+for i in range(1, 6):
+    print(closest_point(i))
