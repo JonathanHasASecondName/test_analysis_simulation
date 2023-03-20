@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 
 from gps_coords import haversine
 
-time_difference = [-1, 106451, 59364, 139195, 88821, 87895]
+time_difference = [-1, 61451, 59364 - 60000, 139195 - 35000, 88821 - 60000, 87895 - 70000]
 
 def plot_mic_array():
 
@@ -122,7 +122,7 @@ def closest_point(flightnum):
 
     plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
     plt.axvline(x=0, color='b', label='Start')
-    plt.axvline(x=15000, color='r', label='End')
+    plt.axvline(x=75000, color='r', label='End')
     plt.title("Drone" + str(flightnum))
     plt.show()
     print(min(dist))
