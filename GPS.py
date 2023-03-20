@@ -120,11 +120,13 @@ def closest_point(flightnum):
     print((dist))
     print((data))
 
-    plt.plot(data[:, 0] - time_difference[1],np.transpose(dist))
+    plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
     plt.axvline(x=0, color='b', label='Start')
     plt.axvline(x=15000, color='r', label='End')
+    plt.title("Drone" + str(flightnum))
     plt.show()
     print(min(dist))
 
 
-closest_point(3)
+for i in range(1, 6):
+    closest_point(i)
