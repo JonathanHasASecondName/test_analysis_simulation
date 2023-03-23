@@ -144,7 +144,7 @@ def closest_point(flightnum):
     plt.xlabel("GPS time (ms)")
     plt.ylabel("Geometrical distance from microphone (m)")
 
-    plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec")
+    plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
     plt.legend()
     plt.show()
     print(min(dist))
