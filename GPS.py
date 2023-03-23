@@ -3,10 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+
 from gps_coords import haversine
 
-time_difference = [-1, 106451, 59364, 139195, 88821, 87895]
+time_difference = [-1, 61451, 59364 - 60000, 139195 - 35000, 88821 - 60000, 87895 - 70000]
 
+start_time = [-1, 45000, 60000, 35000, 60000, 70000]
+
+expected_closest_point_time = [-1, 15000, 7500, 7200, 9000, 9000]
 def plot_mic_array():
 
     darray = np.loadtxt("data/config.txt")
@@ -103,32 +107,41 @@ def animate_flight(filename):
 # animate_flight("data/Drone1_Flight1/GPS_D1F1.csv")
 
 def closest_point(flightnum):
+
+
     x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
     data = np.genfromtxt("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum),delimiter=",")
 
-    data = np.delete(data, 0, axis=0)
-    x= np.delete(x, 0, axis=0)
-    y = np.delete(y, 0, axis=0)
+    dp = pd.read_csv("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
+    time = dp.iloc[:, 0]
+
+    #data = np.delete(data, 0, axis=0)
+    #x = np.delete(x, 0, axis=0)
+    #y = np.delete(y, 0, axis=0)
 
     sub_x = x - (-0.0279)
     sub_y = y - (-1.6998)
-
-
+    #sub_x = np.isnan(sub_x)
+    #sub_y = np.isnan(sub_y)
     dist = np.sqrt(np.square(sub_x) + np.square(sub_y))
-    list= dist.tolist()
+    print(dist)
+    minimum = np.nanargmin(dist)
+    print(minimum)
+    min_time =time[minimum]
+    print("min time")
+    print(min_time)
     plt.figure()
     print((dist))
-    print((data))
+    print((time))
 
-    plt.plot(data[:, 0] - time_difference[1],np.transpose(dist))
-    plt.axvline(x=0, color='b', label='Start')
-    plt.axvline(x=15000, color='r', label='End')
+    plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
+    plt.axvline(x=start_time[i], color='b', label='Start')
+    plt.axvline(x=start_time[i] + 15000, color='r', label='End')
+    plt.axvline( min_time - time_difference[flightnum] + 15000, color ='y', label = 'PASSBY')
+    plt.title("Drone" + str(flightnum))
     plt.show()
-    print(min(dist)) # this is the closest distance it gets to microphone 16
-    closest_time = data[list.index(min(dist)),0] # this is the corresponding time of that event
+    print(min(dist))
 
-    return closest_time
 
-print(closest_point(1))
 for i in range(1, 6):
-    print(closest_point(i))
+    closest_point(i)

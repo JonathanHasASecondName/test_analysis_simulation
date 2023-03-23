@@ -4,6 +4,8 @@ from math import pi, radians
 array_center_gps = [51.51878, 5.85821]
 radius = 6371000 # Stolen from some random website: https://planetcalc.com/7721/
 
+
+
 def equirectangular(coords):
     acg = [radians(array_center_gps[0]), radians(array_center_gps[1])]
     coords = [radians(coords[0]), radians(coords[1])]
