@@ -134,11 +134,18 @@ def closest_point(flightnum):
     print((dist))
     print((time))
 
+    clock_difference = np.abs(min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
     plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
-    plt.axvline(x=start_time[i], color='b', label='Start')
-    plt.axvline(x=start_time[i] + 15000, color='r', label='End')
-    plt.axvline( min_time - time_difference[flightnum] + 15000, color ='y', label = 'PASSBY')
-    plt.title("Drone" + str(flightnum))
+    plt.axvline(x=start_time[flightnum], color='b', label='Start')
+    plt.axvline(x=start_time[flightnum] + 15000, color='r', label='End')
+    plt.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='black', label = 'Theo')
+    plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
+
+    plt.xlabel("GPS time (ms)")
+    plt.ylabel("Geometrical distance from microphone (m)")
+
+    plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
+    plt.legend()
     plt.show()
     print(min(dist))
 
