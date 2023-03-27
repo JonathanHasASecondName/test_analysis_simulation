@@ -30,12 +30,18 @@ def plot_mic_array_corrected():
 
     x = -1 * darray[:, -2]
     y = darray[:, -1]
-    plt.scatter(x, y)
+
     broken = ([0, 40, 48, 2, 34, 59, 5, 45, 46, 55, 63])
+    plt.figure()
+
+    plt.subplot(111).minorticks_on()
+    plt.scatter(x, y)
     plt.scatter(x[broken], y[broken], c="red")
     plt.scatter(x[57], y[57], c="green")
     plt.ylabel("y")
     plt.xlabel("x")
+    plt.grid(linestyle='-', which='major', linewidth=0.9)
+    plt.grid(linestyle=':', which='minor',linewidth = 0.5)
     plt.show()
     return
 
@@ -98,6 +104,8 @@ def animate_flight(filename):
 
     ani = animation.FuncAnimation(fig, update, len(x), fargs=[x, y, line], interval=20,
                                   blit=True)  # Freely inspired from StackOverflow
+
+
     plt.show()
 
 
@@ -144,7 +152,7 @@ def closest_point(flightnum):
     plt.xlabel("GPS time (ms)")
     plt.ylabel("Geometrical distance from microphone (m)")
 
-    plt.title("Drone" + str(flightnum) + " - Clock Difference: " + str(clock_difference) + "(ms)")
+    plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
     plt.legend()
     plt.show()
     print(min(dist))
