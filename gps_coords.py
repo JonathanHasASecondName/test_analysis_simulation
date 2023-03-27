@@ -33,6 +33,8 @@ def haversine(coords):
 
     reltheta = pi + (theta + pi/6)
     x, y = d * cos(reltheta), d*sin(reltheta) # Relative coordinates
+    print("HAV")
+    print(x,y)
 
     return (x, y) 
 

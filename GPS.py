@@ -7,6 +7,8 @@ import matplotlib.animation as animation
 from gps_coords import haversine
 
 time_difference = [-1, 61451, 59364 - 60000, 139195 - 35000, 88821 - 60000, 87895 - 70000]
+limit_down = [-1, 300] #where data from the excel file starts to matter
+limit_up = [-1, 650 ] #where data from the excel file is not relevant anymore
 
 start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
@@ -63,7 +65,7 @@ def convert_coords(filename):
     for index, i in enumerate(converted[:, 1:3]):
         converted[index, 1:3] = haversine(i)
 
-    x, y = converted[:, 1], converted[:, 2]
+    x, y = converted[:, 1], converted[:, 2] #
 
     return x, y
 
@@ -107,6 +109,50 @@ def animate_flight(filename):
 
 
     plt.show()
+
+
+def drone_speed(flightnum):
+
+    x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
+    dp = pd.read_csv("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
+    time = dp.iloc[:, 0].values
+
+    x = x[1:] - (-0.0279)
+    print(x)
+    y = y[1:] - (-1.6998)
+    #print(time)
+    speed = []
+
+    if len(x) == len(time):
+
+        for i in range(1, len(time)):
+            distx = (x[i] - x[i-1])
+            disty = (y[i] - y[i-1])
+            dist_stamp = np.sqrt(distx **2 + disty **2)
+            print()
+            #print(dist_stamp)
+            #print(time[i], time[i-1])
+            time_stamp = time[(i)] - time[i-1]
+            #print(time_stamp)
+            time_stamp = time_stamp*0.001  # convert to s
+            #print(time_stamp)
+            speed_stamp = dist_stamp / time_stamp
+
+            speed.append(speed_stamp)
+    else:
+        print("tf bro")
+    #print(speed)
+    speed = np.asarray(speed)
+    print(np.mean(speed[300:800]))
+    print(np.sort(speed)[-200:])
+    print(max(speed))
+    #print(speed_stamp)
+    return speed
+
+
+
+
+
 
 
 # plot_one_flight(1)
@@ -159,4 +205,5 @@ def closest_point(flightnum):
 
 
 for i in range(1, 6):
-    closest_point(i)
+    #closest_point(i)
+    drone_speed(i)
