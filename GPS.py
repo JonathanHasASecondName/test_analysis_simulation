@@ -10,7 +10,7 @@ time_difference = [-1, 61451, 59364 - 60000, 139195 - 35000, 88821 - 60000, 8789
 
 start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
-expected_closest_point_time = [-1, 15000, 7500, 7200, 9000, 9000]
+expected_closest_point_time = [-1, 14800, 7500, 7200, 9000, 9000]
 def plot_mic_array():
 
     darray = np.loadtxt("data/config.txt")
@@ -144,7 +144,7 @@ def closest_point(flightnum):
     plt.xlabel("GPS time (ms)")
     plt.ylabel("Geometrical distance from microphone (m)")
 
-    plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
+    plt.title("Drone" + str(flightnum) + " - Clock Difference: " + str(clock_difference) + "(ms)")
     plt.legend()
     plt.show()
     print(min(dist))
