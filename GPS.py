@@ -3,12 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-
 from gps_coords import haversine
 
-time_difference = [-1, 61451, 59364 - 60000, 139195 - 35000, 88821 - 60000, 87895 - 70000]
-limit_down = [-1, 300] #where data from the excel file starts to matter
-limit_up = [-1, 650 ] #where data from the excel file is not relevant anymore
+time_difference = [-1, 61451, -636, 84195, 28821, 17895]
+limit_down = [-1, 300, ] #where data from the excel file starts to matter
+limit_up = [-1, 650,  ] #where data from the excel file is not relevant anymore
 
 start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
@@ -129,7 +128,7 @@ def drone_speed(flightnum):
             distx = (x[i] - x[i-1])
             disty = (y[i] - y[i-1])
             dist_stamp = np.sqrt(distx **2 + disty **2)
-            print()
+            #print()
             #print(dist_stamp)
             #print(time[i], time[i-1])
             time_stamp = time[(i)] - time[i-1]
@@ -143,9 +142,10 @@ def drone_speed(flightnum):
         print("tf bro")
     #print(speed)
     speed = np.asarray(speed)
-    print(np.mean(speed[300:800]))
-    print(np.sort(speed)[-200:])
-    print(max(speed))
+    print("SPEED ", flightnum)
+    print(np.mean(speed[100:-100]))
+    #print(np.sort(speed)[-200:])
+    #print(max(speed))
     #print(speed_stamp)
     return speed
 
@@ -205,5 +205,8 @@ def closest_point(flightnum):
 
 
 for i in range(1, 6):
-    #closest_point(i)
+    closest_point(i)
     drone_speed(i)
+
+
+
