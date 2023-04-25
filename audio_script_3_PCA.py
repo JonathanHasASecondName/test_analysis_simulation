@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import signal
 from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
 
 n_perseg = 1024*8*4
 n_frequencies = 1024*64
