@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from scipy import signal
 
 from gps_coords import haversine
 
@@ -178,15 +179,31 @@ def closest_point(flightnum):
     #sub_x = np.isnan(sub_x)
     #sub_y = np.isnan(sub_y)
     dist = np.sqrt(np.square(sub_x) + np.square(sub_y))
-    print(dist)
+    #print(dist)
+    x = expected_closest_point_time[i]
+    #print(expected_closest_point_time[i])
     minimum = np.nanargmin(dist)
-    print(minimum)
+    dist[0] = dist[1]
+    min1 = dist[np.argsort(dist)[0]]
+    min2 = dist[np.argsort(dist)[1]]
+
+
+
+
+    ### NEW CODEEE ###
+    print("Relative minimum point")
+    points = signal.argrelmin(dist, order=100)
+    print("HELLO LOOK AT THIS --> ", points, [time[i] for i in points], "HELLO STOP LOOKING AT THIS")
+    #minimum =
+    #print(minimum)
+    print("here")
+    print(min1, min2)
     min_time =time[minimum]
-    print("min time")
-    print(min_time)
+    #print("min time")
+    #print(min_time)
     plt.figure()
-    print((dist))
-    print((time))
+    #print((dist))
+    #print((time))
 
     clock_difference = np.abs(min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
     plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
@@ -201,7 +218,7 @@ def closest_point(flightnum):
     plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
     plt.legend()
     plt.show()
-    print(min(dist))
+    #print(min(dist))
 
 
 for i in range(1, 6):
