@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import signal
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 # Inputs
 n_perseg = 1024*8*4
-n_frequencies = 1024*64
+n_frequencies = 1024*(2**6)
 flight_number = str(5)
 
 # Function Definitions
@@ -34,19 +35,22 @@ Sxx = 10 * np.log10(Sxx)
 Sxx[Sxx < -125] = -125
 Sxx = Sxx[:n_frequencies, :]
 print("Frequencies",f,len(f))
-print("Pressures",Sxx,len(Sxx),Sxx.shape)
+print("Pressures",Sxx,len(Sxx))
 
 # Perform PCA on Pressure Levels (Sxx)
 pca = PCA(1)
+std_data = StandardScaler().fit_transform(Sxx)
+#red = pca.fit_transform(std_data.T)[:,0]
 red = pca.fit_transform(Sxx.T)[:,0]
 weights = pca.components_.reshape(-1)
 variance = pca.explained_variance_ratio_
 print("PCAd Pressures",red,len(red))
 print("Weights",weights,len(weights))
 print("Variance",variance)
+print("Max Weight",max(weights))
 
 # Obtain Main Frequencies
-top = np.argsort(weights.T)[:100]
+top = np.argsort(-weights.T)[:80]
 fund_w = [weights[i] for i in top]
 fund_f = np.asarray([f[i] for i in top])
 fund_f_round = np.round(fund_f,0)
@@ -54,11 +58,10 @@ print(f"Top {len(top)} Positions",top)
 print(f"Top {len(top)} Weights",fund_w)
 print(f"Top {len(top)} Frequencies",fund_f)
 
+# Clean Repeats
 f_set = set(fund_f_round)
-#print(sorted(f_set, reverse=True))
-
 f_set = np.asarray(list(f_set))
-#print (f_set)
+print("Cleaned Top Frequencies",f_set)
 
 plt.subplot(1,1,1).minorticks_on()
 plt.scatter(fund_w, fund_f)
