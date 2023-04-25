@@ -63,21 +63,6 @@ f_set = set(fund_f_round)
 f_set = np.asarray(list(f_set))
 print("Cleaned Top Frequencies",f_set)
 
-
-plt.subplot(1,1,1).minorticks_on()
-plt.scatter(fund_w, fund_f)
-plt.title("Frequencies vs Weigths")
-plt.grid(linestyle='-', which='major', linewidth=0.9)
-plt.grid(linestyle=':', which='minor',linewidth=0.5)
-plt.show()
-
-plt.subplot(1,1,1).minorticks_on()
-plt.scatter(fund_w * fund_f, fund_f)
-plt.title("Weighted Frequencies vs Weigths")
-plt.grid(linestyle='-', which='major', linewidth=0.9)
-plt.grid(linestyle=':', which='minor',linewidth=0.5)
-plt.show()
-
 # Plot Spectrogram and PWOSPL
 fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 3]})
 
@@ -103,3 +88,19 @@ plt.subplots_adjust(hspace=0.3)
 plt.tight_layout()
 plt.savefig(fname=f"Drone {flight_number} PCA",dpi=900)
 plt.show()
+
+"""
+plt.subplot(1,1,1).minorticks_on()
+plt.scatter(fund_w, fund_f)
+plt.title("Frequencies vs Weigths")
+plt.grid(linestyle='-', which='major', linewidth=0.9)
+plt.grid(linestyle=':', which='minor',linewidth=0.5)
+plt.show()
+
+plt.subplot(1,1,1).minorticks_on()
+plt.scatter(fund_w * fund_f, fund_f)
+plt.title("Weighted Frequencies vs Weigths")
+plt.grid(linestyle='-', which='major', linewidth=0.9)
+plt.grid(linestyle=':', which='minor',linewidth=0.5)
+plt.show()
+"""
