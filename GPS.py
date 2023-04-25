@@ -150,12 +150,6 @@ def drone_speed(flightnum):
     #print(speed_stamp)
     return speed
 
-
-
-
-
-
-
 # plot_one_flight(1)
 # plot_all_flights()
 # plot_mic_array_corrected()
@@ -180,7 +174,7 @@ def closest_point(flightnum):
     #sub_y = np.isnan(sub_y)
     dist = np.sqrt(np.square(sub_x) + np.square(sub_y))
     #print(dist)
-    x = expected_closest_point_time[i]
+    #x = expected_closest_point_time[i]
     #print(expected_closest_point_time[i])
     minimum = np.nanargmin(dist)
     dist[0] = dist[1]
@@ -192,25 +186,22 @@ def closest_point(flightnum):
 
     ### NEW CODEEE ###
     print("Relative minimum point")
-    points = signal.argrelmin(dist, order=100)
-    print("HELLO LOOK AT THIS --> ", points, [time[i] for i in points], "HELLO STOP LOOKING AT THIS")
-    #minimum =
-    #print(minimum)
-    print("here")
+    points = signal.argrelmin(dist, order=100)[0]
+    values = dist[points]
+    min1, min2 = time[points[np.argpartition(values, 1)[:2]]]
     print(min1, min2)
+    
     min_time =time[minimum]
-    #print("min time")
-    #print(min_time)
     plt.figure()
-    #print((dist))
-    #print((time))
-
+    plt.axvline(x=min1 - time_difference[flightnum], color='g', label='joebama')
+    plt.axvline(x=min2 - time_difference[flightnum], color='g', label='joebama')
+ 
     clock_difference = np.abs(min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
     plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
     plt.axvline(x=start_time[flightnum], color='b', label='Start')
     plt.axvline(x=start_time[flightnum] + 15000, color='r', label='End')
     plt.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='black', label = 'Theo')
-    plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
+    # plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
 
     plt.xlabel("GPS time (ms)")
     plt.ylabel("Geometrical distance from microphone (m)")
@@ -218,12 +209,13 @@ def closest_point(flightnum):
     plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
     plt.legend()
     plt.show()
+
     #print(min(dist))
 
 
 for i in range(1, 6):
     closest_point(i)
-    drone_speed(i)
+    # drone_speed(i)
 
 
 
