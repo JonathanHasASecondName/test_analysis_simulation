@@ -1,16 +1,13 @@
 import numpy as np
 from sklearn.cluster import KMeans
-
-
-
 def cluster(datax, datay, no_clusters):
-    X = np.vstack((datax, datay))
+    x = np.vstack((datax, datay))
 
     # Create a KMeans object with two clusters
     kmeans = KMeans(n_clusters=no_clusters)
 
     # Fit the KMeans object to the data
-    kmeans.fit(X)
+    kmeans.fit(x)
 
     # Get the labels for each data point
     labels = kmeans.labels_
@@ -18,7 +15,7 @@ def cluster(datax, datay, no_clusters):
     # Calculate the average x value for each cluster
     averages = []
     for i in range(2):
-        cluster = X[labels == i]
+        cluster = x[labels == i]
         average = np.mean(cluster)
         averages.append(average)
 
