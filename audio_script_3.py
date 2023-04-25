@@ -39,6 +39,7 @@ main_data = preprocess_data(main_data)
 f, t, Sxx = signal.spectrogram(main_data, fs=50000, nperseg=n_perseg, nfft=int(n_perseg*16), noverlap=int(n_perseg*0.8))
 Sxx = 10 * np.log10(Sxx)
 Sxx[Sxx < -125] = -125
+
 plt.pcolormesh(t, f[:n_frequencies], Sxx[:n_frequencies, :], cmap='jet')
 plt.ylabel('Frequency [Hz]')
 plt.xlabel('Time [sec]')

@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 n_perseg = 1024*8*4
 n_frequencies = 1024*64
 
-flight_number = str(5)
+flight_number = str(1)
 
 def read_csv(filename):
     df = pd.read_csv(filename, header=None)
@@ -36,20 +36,38 @@ Sxx = Sxx[:n_frequencies, :]
 pca = PCA(1)
 red = pca.fit_transform(Sxx.T)[:,0]
 
+components = pca.components_
+variance = pca.explained_variance_ratio_
 
 print(red, red.shape)
 
-plt.subplot(2,1,1).minorticks_on()
+
+fig, axs = plt.subplots(2, 2)
+axs[0, 0].plot(t, red)
+axs[0, 0].set_title('TEST1')
+axs[1, 0].pcolormesh(t, f, Sxx, cmap='jet')
+axs[1, 0].set_title('TEST2')
+axs[1, 1]._colorbars(label="Power/Frequency (dB/Hz)", orientation="vertical")
+
+"""
+plt.subplot(4,1,1).minorticks_on()
 plt.plot(t, red)
 plt.grid(linestyle='-', which='major', linewidth=0.9)
 plt.grid(linestyle=':', which='minor',linewidth=0.5)
+plt.ylabel('CP-Weighted SPL')
 
-plt.subplot(2,1,2)
-plt.pcolormesh(t, f[:n_frequencies], Sxx[:n_frequencies, :], cmap='jet')
+plt.subplot(4,1,2)
+plt.pcolormesh(t, f, Sxx, cmap='jet')
 plt.ylabel('Frequency [Hz]')
 plt.xlabel('Time [sec]')
 plt.yscale("log")
-#plt.colorbar(label="Power/Frequency (dB/Hz)", orientation="vertical")
 plt.axis(ymin=10, ymax=500)
-plt.savefig(f'flight{flight_number}spectrogram_v3')
+
+plt.subplot(4,2,2)
+plt.colorbar(label="Power/Frequency (dB/Hz)", orientation="vertical")
+
+plt.subplots_adjust(hspace=0.05)
+plt.tight_layout()
+
 plt.show()
+"""
