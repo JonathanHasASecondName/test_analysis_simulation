@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 n_perseg = 1024*8*4
 n_frequencies = 1024*64
 
-flight_number = str(1)
+flight_number = str(5)
 
 def read_csv(filename):
     df = pd.read_csv(filename, header=None)
@@ -36,13 +36,23 @@ Sxx = Sxx[:n_frequencies, :]
 pca = PCA(1)
 red = pca.fit_transform(Sxx.T)[:,0]
 
-components = pca.components_
+components = pca.components_.reshape(-1)
+top = np.argsort(components.T)[:100]
+fund_w = [components[i] for i in top]
+fund_f = np.asarray([f[i] for i in top])
+print(fund_w,fund_f)
+fund_f_round = np.round(fund_f,0)
+print(fund_f_round)
+
+f_set = set(fund_f_round)
+
 variance = pca.explained_variance_ratio_
 
 print(red, red.shape)
 
 fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 3]})
-fig.tight_layout()
+
+fig.suptitle(f"Drone {flight_number}")
 
 ax[0].minorticks_on()
 ax[0].plot(t, red)
@@ -58,13 +68,10 @@ ax[1].set_ylabel('Frequency [Hz]')
 ax[1].set_xlabel('Time [sec]')
 ax[1].set_xlim(t[0], t[-1])
 ax[1].set_yscale("log")
-#ax[1].colorbar(label="Power/Frequency [dB/Hz]", orientation="horizontal",location='bottom')
 ax[1].axis(ymin=10, ymax=500)
-ax[1].xaxis.tick_top()
-ax[1].xaxis.set_label_position('top')
-
 plt.subplots_adjust(hspace=0.3)
 plt.tight_layout()
+plt.savefig(fname=f"Drone {flight_number} PCA",dpi=900)
 plt.show()
 
 """
