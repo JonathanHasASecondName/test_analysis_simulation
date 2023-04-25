@@ -63,6 +63,7 @@ f_set = set(fund_f_round)
 f_set = np.asarray(list(f_set))
 print("Cleaned Top Frequencies",f_set)
 
+
 plt.subplot(1,1,1).minorticks_on()
 plt.scatter(fund_w, fund_f)
 plt.title("Frequencies vs Weigths")
@@ -84,7 +85,7 @@ fig.suptitle(f"Drone {flight_number} - Var: {round(float(variance)*100,1)}%")
 
 ax[0].minorticks_on()
 ax[0].plot(t, red)
-ax[0].set_ylabel('PWOSPL [dB]')
+ax[0].set_ylabel('Characteristic Loudness [dB]')
 ax[0].set_xlabel('Time [sec]')
 ax[0].set_xlim(t[0], t[-1])
 ax[0].grid(linestyle='-', which='major', linewidth=0.9)
