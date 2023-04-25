@@ -60,6 +60,8 @@ ax[1].set_xlim(t[0], t[-1])
 ax[1].set_yscale("log")
 #ax[1].colorbar(label="Power/Frequency [dB/Hz]", orientation="horizontal",location='bottom')
 ax[1].axis(ymin=10, ymax=500)
+ax[1].xaxis.tick_top()
+ax[1].xaxis.set_label_position('top')
 
 plt.subplots_adjust(hspace=0.3)
 plt.tight_layout()
