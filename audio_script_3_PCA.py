@@ -40,19 +40,19 @@ components = pca.components_.reshape(-1)
 top = np.argsort(components.T)[:100]
 fund_w = [components[i] for i in top]
 fund_f = np.asarray([f[i] for i in top])
-print(fund_w,fund_f)
 fund_f_round = np.round(fund_f,0)
-print(fund_f_round)
 
 f_set = set(fund_f_round)
+f_set = np.asarray(list(f_set))
+print (f_set)
 
 variance = pca.explained_variance_ratio_
 
-print(red, red.shape)
+#print(red, red.shape)
 
 fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 3]})
 
-fig.suptitle(f"Drone {flight_number}")
+fig.suptitle(f"Drone {flight_number} - Var: {round(float(variance)*100,1)}%")
 
 ax[0].minorticks_on()
 ax[0].plot(t, red)
