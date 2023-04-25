@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import signal
 from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 
 n_perseg = 1024*8*4
 n_frequencies = 1024*64
@@ -43,12 +44,23 @@ fund_f = np.asarray([f[i] for i in top])
 fund_f_round = np.round(fund_f,0)
 
 f_set = set(fund_f_round)
+print(sorted(f_set, reverse=True))
+
 f_set = np.asarray(list(f_set))
 print (f_set)
 
+plt.scatter(fund_w, fund_f)
+plt.title("Frequencies with weigths")
+plt.show()
+
+plt.scatter(fund_w * fund_f, fund_f)
+plt.title("Frequencies with weigths")
+plt.show()
+
+#print(f_set)
 variance = pca.explained_variance_ratio_
 
-#print(red, red.shape)
+print(red, red.shape)
 
 fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 3]})
 

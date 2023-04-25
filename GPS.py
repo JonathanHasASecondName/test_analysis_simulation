@@ -12,7 +12,7 @@ limit_up = [-1, 650,  ] #where data from the excel file is not relevant anymore
 
 start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
-expected_closest_point_time = [-1, 14900, 7500, 7200, 6500, 7000]
+expected_closest_point_time = [-1, 14900, 7500, 7200, 6700, 6200]
 def plot_mic_array():
 
     darray = np.loadtxt("data/config.txt")
@@ -117,9 +117,10 @@ def drone_speed(flightnum):
     dp = pd.read_csv("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
     time = dp.iloc[:, 0].values
 
-    x = x[1:] - (0.0279)
+    x = x[1:] - (-0.1538)
+    # -0.1538 y=0.4457
     print(x)
-    y = y[1:] - (-1.6998)
+    y = y[1:] - (0.4457)
     #print(time)
     speed = []
 
