@@ -82,6 +82,8 @@ def cropping(freqs):
             new.append((freqs[i]+freqs[i+1])/2)
         if mask[i] == 1:
             print("out")
+            if i==len(mask)-1:
+                new.append(freqs[i + 1])
         if mask[i] == 2: #append itself
             new.append(freqs[i])
             if i==len(mask)-1:
@@ -106,17 +108,20 @@ while True:
         break
 
 text_f = []
+for i in range(len(a)):
+    text_f.append(str(a[i]))
 
 print("Cleaned Top Frequencies",a)
+print("Cleaned Top Frequencies",text_f)
 
 # Plot Spectrogram and PWOSPL
-fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 3]})
+fig, ax = plt.subplots(3, 1, gridspec_kw={'height_ratios': [3, 4, 1]})
 
 fig.suptitle(f"Drone {flight_number} - Var: {round(float(variance)*100,1)}%")
 
 ax[0].minorticks_on()
 ax[0].plot(t, red)
-ax[0].set_ylabel('Characteristic Loudness [dB]')
+ax[0].set_ylabel('Eigenloudness [dB]')
 ax[0].set_xlabel('Time [sec]')
 ax[0].set_xlim(t[0], t[-1])
 ax[0].grid(linestyle='-', which='major', linewidth=0.9)
@@ -130,9 +135,15 @@ ax[1].set_xlim(t[0], t[-1])
 #plt.colorbar(label="Power/Frequency [dB/Hz]", orientation="horizontal",location='bottom')
 ax[1].set_yscale("log")
 ax[1].axis(ymin=10, ymax=500)
+
+ax[2].axis('off')
+ax[2].table(cellText=[text_f], colLabels=None, cellLoc='center', loc='center')
+ax[2].set_title("Characteristic Frequencies [Hz]", y=0.7,fontsize=12)
+
 plt.subplots_adjust(hspace=0.3)
 plt.tight_layout()
 plt.savefig(fname=f"Drone {flight_number} PCA",dpi=900)
+
 plt.show()
 
 """
