@@ -4,11 +4,13 @@ import pandas as pd
 from scipy import signal
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+import numpy.random as rd
 
 # Inputs
-n_perseg = 1024*8*4
-n_frequencies = 1024*(2**6)
-flight_number = str(5)
+n_perseg = 1024*8*4 #number of FFTs
+n_frequencies = 1024*(2**6) # frequencies to show on spectrogram
+flight_number = str(5) # flight number
+target_freqs = 5 # number of "top" frequencies desired
 
 # Function Definitions
 def read_csv(filename):
@@ -50,17 +52,6 @@ print("Variance",variance)
 print("Max Weight",max(weights))
 
 # Obtain Main Frequencies
-top = np.argsort(-weights.T)[:80]
-fund_w = [weights[i] for i in top]
-fund_f = np.asarray([f[i] for i in top])
-fund_f_round = np.round(fund_f,0)
-print(f"Top {len(top)} Positions",top)
-print(f"Top {len(top)} Weights",fund_w)
-print(f"Top {len(top)} Frequencies",fund_f)
-
-# Clean Repeats
-f_set = set(fund_f_round)
-f_set = np.asarray(list(f_set))
 
 def masking(freqs,tol=0.06):
     mask = []
@@ -81,7 +72,6 @@ def cropping(freqs):
         if mask[i] == 0: #append average
             new.append((freqs[i]+freqs[i+1])/2)
         if mask[i] == 1:
-            print("out")
             if i==len(mask)-1:
                 new.append(freqs[i + 1])
         if mask[i] == 2: #append itself
@@ -90,28 +80,45 @@ def cropping(freqs):
                 new.append(freqs[i+1])
     return new
 
-a = f_set
-mask = masking(a)
-print("a",a)
-print("mask",mask)
-
+probe = rd.randint(70,150)
+counter = 0
 while True:
-    a = cropping(a)
+    print(f"Pick Top {probe}")
+    top = np.argsort(-weights.T)[:probe] # Pick Top Freqs
+    fund_w = [weights[i] for i in top]
+    fund_f = np.asarray([f[i] for i in top])
+    fund_f_round = np.round(fund_f,0) # Round
+    f_set = set(fund_f_round) # Clean Repeats
+    f_set = np.asarray(list(f_set)) # Turn Numpy Array
+
+    a = f_set
     mask = masking(a)
-    print("a",a)
-    print("mask",mask)
-    print("len",len(mask)*2,"\t sum",sum(mask))
-    if len(mask)*2 == sum(mask):
-        for i in range(len(a)):
-            a[i] = round(a[i],1)
-            a = np.array(a)
+    while True:
+        a = cropping(a)
+        mask = masking(a)
+        if len(mask)*2 == sum(mask):
+            for i in range(len(a)):
+                a[i] = round(a[i],1)
+                a = np.array(a)
+            break
+    if len(a) < target_freqs:
+        print(len(a))
+        probe += rd.randint(5,20)
+        counter +=1
+    if len(a) > target_freqs:
+        print(len(a))
+        probe -= rd.randint(5,20)
+        counter += 1
+    if len(a) == target_freqs:
         break
+    if counter >= 100:
+        target_freqs += 1
+        counter = 0
 
 text_f = []
 for i in range(len(a)):
     text_f.append(str(a[i]))
 
-print("Cleaned Top Frequencies",a)
 print("Cleaned Top Frequencies",text_f)
 
 # Plot Spectrogram and PWOSPL
@@ -138,11 +145,11 @@ ax[1].axis(ymin=10, ymax=500)
 
 ax[2].axis('off')
 ax[2].table(cellText=[text_f], colLabels=None, cellLoc='center', loc='center')
-ax[2].set_title("Characteristic Frequencies [Hz]", y=0.7,fontsize=12)
+ax[2].set_title(f"Top {target_freqs} Characteristic Frequencies [Hz]", y=0.7,fontsize=12)
 
 plt.subplots_adjust(hspace=0.3)
 plt.tight_layout()
-plt.savefig(fname=f"Drone {flight_number} PCA",dpi=900)
+#plt.savefig(fname=f"Drone {flight_number} PCA",dpi=900)
 
 plt.show()
 
