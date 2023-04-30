@@ -61,7 +61,53 @@ print(f"Top {len(top)} Frequencies",fund_f)
 # Clean Repeats
 f_set = set(fund_f_round)
 f_set = np.asarray(list(f_set))
-print("Cleaned Top Frequencies",f_set)
+
+def masking(freqs,tol=0.06):
+    mask = []
+    for i in range(len(freqs)-1):
+        r = abs(round((freqs[i+1]-freqs[i])/freqs[i+1],3))
+        if r <=tol:
+            mask.append(0)
+        if r > tol and (i==0 or mask[i-1] != 0):
+            mask.append(2)
+        if r > tol and mask[i-1] == 0:
+            mask.append(1)
+    return mask
+
+def cropping(freqs):
+    mask = masking(freqs)
+    new = []
+    for i in range(len(mask)):
+        if mask[i] == 0: #append average
+            new.append((freqs[i]+freqs[i+1])/2)
+        if mask[i] == 1:
+            print("out")
+        if mask[i] == 2: #append itself
+            new.append(freqs[i])
+            if i==len(mask)-1:
+                new.append(freqs[i+1])
+    return new
+
+a = f_set
+mask = masking(a)
+print("a",a)
+print("mask",mask)
+
+while True:
+    a = cropping(a)
+    mask = masking(a)
+    print("a",a)
+    print("mask",mask)
+    print("len",len(mask)*2,"\t sum",sum(mask))
+    if len(mask)*2 == sum(mask):
+        for i in range(len(a)):
+            a[i] = round(a[i],1)
+            a = np.array(a)
+        break
+
+text_f = []
+
+print("Cleaned Top Frequencies",a)
 
 # Plot Spectrogram and PWOSPL
 fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 3]})
