@@ -80,11 +80,14 @@ for flight_number in range(1, 6):
     -Sxx: Pressure Levels in [dB]
     -Sxx_legacy: Pressure Levels in [Pa]
     """
+
     # Reduce
     pca = PCA(1)
     red = np.array(pca.fit_transform(Sxx_legacy.T)[:,0])
     weights = pca.components_.reshape(-1)
+    weighter = np.sum(weights)
     variance = pca.explained_variance_ratio_
+    red /= weighter
 
     # Post-Processing
     min = abs(np.min(red))
@@ -92,6 +95,8 @@ for flight_number in range(1, 6):
     red = 10 * np.log10(red) #comment if [Pa]
     preinf = np.min(red[np.isfinite(red)]) #comment if [Pa]
     red[np.isneginf(red)] = preinf #comment if [Pa]
+    maxpoint = np.where(red == np.amax(red))
+    timeof = t[maxpoint]
 
     """
     Obtain Main Frequencies
@@ -145,6 +150,8 @@ for flight_number in range(1, 6):
     ax[0].plot(t, red)
     ax[0].set_ylabel('Eigenloudness [dB]')
     ax[0].set_xlabel('Time [sec]')
+    ax[0].vlines(timeof,np.min(red)*0.95,np.max(red)*1.05)
+    ax[0].set_ylim(np.min(red)*0.95, np.max(red)*1.05)
     ax[0].set_xlim(t[0], t[-1])
     ax[0].grid(linestyle='-', which='major', linewidth=0.9)
     ax[0].grid(linestyle=':', which='minor',linewidth=0.5)
@@ -168,19 +175,3 @@ for flight_number in range(1, 6):
     plt.savefig(fname=f"Drone {flight_number} PCA New (dB)",dpi=900)
 
     plt.show()
-
-"""
-plt.subplot(1,1,1).minorticks_on()
-plt.scatter(fund_w, fund_f)
-plt.title("Frequencies vs Weigths")
-plt.grid(linestyle='-', which='major', linewidth=0.9)
-plt.grid(linestyle=':', which='minor',linewidth=0.5)
-plt.show()
-
-plt.subplot(1,1,1).minorticks_on()
-plt.scatter(fund_w * fund_f, fund_f)
-plt.title("Weighted Frequencies vs Weigths")
-plt.grid(linestyle='-', which='major', linewidth=0.9)
-plt.grid(linestyle=':', which='minor',linewidth=0.5)
-plt.show()
-"""
