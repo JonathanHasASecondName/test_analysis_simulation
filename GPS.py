@@ -189,17 +189,20 @@ def closest_point(flightnum):
     points = signal.argrelmin(dist, order=100)[0]
     values = dist[points]
     min1, min2 = time[points[np.argpartition(values, 1)[:2]]]
-    print(min1, min2)
+    min1 -= time_difference[flightnum]
+    min2 -= time_difference[flightnum]
+
+    closestmin = min1 if abs(min1 - start_time[flightnum] + 7500) < abs(min2 - start_time[flightnum] + 7500) else min2
     
     min_time =time[minimum]
     plt.figure()
-    plt.axvline(x=min1 - time_difference[flightnum], color='g', label='joebama')
-    plt.axvline(x=min2 - time_difference[flightnum], color='g', label='joebama')
+    plt.axvline(x=closestmin, color='g', label='joebama')
  
     clock_difference = np.abs(min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
     plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
     plt.axvline(x=start_time[flightnum], color='b', label='Start')
     plt.axvline(x=start_time[flightnum] + 15000, color='r', label='End')
+    plt.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="red", alpha=0.5)
     plt.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='black', label = 'Theo')
     # plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
 
