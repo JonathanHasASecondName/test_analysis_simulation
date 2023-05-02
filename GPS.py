@@ -197,7 +197,7 @@ def closest_point(flightnum):
     
     min_time =time[minimum]
     plt.figure()
-    plt.axvline(x=closestmin, color='g', label='joebama')
+    plt.axvline(x=closestmin, color='g', label='Actual closest approach')
  
     clock_difference = np.abs(min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
     plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
