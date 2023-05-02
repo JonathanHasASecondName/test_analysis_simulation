@@ -142,6 +142,9 @@ for flight_number in range(1, 6):
     """
     Plot Graphs
     """
+
+    img = plt.imread("drone.png")
+
     fig, ax = plt.subplots(3, 1, gridspec_kw={'height_ratios': [3, 4, 1]})
 
     fig.suptitle(f"Drone {flight_number} - Var: {round(float(variance)*100,1)}%")
@@ -149,6 +152,7 @@ for flight_number in range(1, 6):
     ax[0].minorticks_on()
     ax[0].plot(t, red)
     ax[0].set_ylabel('Eigenloudness [dB]')
+    #ax[0].imshow(img,extent=[timeof,timeof+img.shape[1],red[maxpoint],red[maxpoint]+img.shape[0]])
     ax[0].set_xlabel('Time [sec]')
     ax[0].vlines(timeof,np.min(red) * 1.05,np.max(red) * 0.95)
     ax[0].set_ylim(np.min(red) * 1.05 , np.max(red) * 0.95)
