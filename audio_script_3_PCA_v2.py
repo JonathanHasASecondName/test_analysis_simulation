@@ -63,8 +63,8 @@ main_data = preprocess_data(main_data)
 
 # Produce Spectrogram Data
 f, t, Sxx = signal.spectrogram(main_data, fs=50000, nperseg=n_perseg, nfft=int(n_perseg*16), noverlap=int(n_perseg*0.8))
-# Truncate Data
 
+# Truncate Data
 f = f[:n_frequencies]
 Sxx_legacy = Sxx
 Sxx = 10 * np.log10(Sxx_legacy)
