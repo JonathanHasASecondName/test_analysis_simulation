@@ -10,7 +10,8 @@ time_difference = [-1, 61451, -636, 84195, 28821, 17895]
 
 start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
-expected_closest_point_time = [-1, 14900, 7500, 7200, 6700, 6200]
+expected_closest_point_time = [-1, 14900, 8300, 7200, 6700, 6200]
+expected_closest_point_time_2 = [-1, 14900, 8400, 8500, 6250, 6000]
 def plot_mic_array():
 
     darray = np.loadtxt("data/config.txt")
@@ -104,8 +105,6 @@ def animate_flight(filename):
 
     ani = animation.FuncAnimation(fig, update, len(x), fargs=[x, y, line], interval=20,
                                   blit=True)  # Freely inspired from StackOverflow
-
-
     plt.show()
 
 
@@ -116,10 +115,8 @@ def drone_speed(flightnum):
     time = dp.iloc[:, 0].values
 
     x = x[1:] - (-0.1538)
-    # -0.1538 y=0.4457
     print(x)
     y = y[1:] - (0.4457)
-    #print(time)
     speed = []
 
     if len(x) == len(time):
@@ -169,50 +166,56 @@ def closest_point(flightnum):
 
     sub_x = x - (-0.0279)
     sub_y = y - (-1.6998)
-    #sub_x = np.isnan(sub_x)
-    #sub_y = np.isnan(sub_y)
     dist = np.sqrt(np.square(sub_x) + np.square(sub_y))
-    #print(dist)
-    #x = expected_closest_point_time[i]
-    #print(expected_closest_point_time[i])
+
+    # finding the minimum distance
     minimum = np.nanargmin(dist[:1500])
     dist[0] = dist[1]
-    min1 = dist[np.argsort(dist)[0]]
-    min2 = dist[np.argsort(dist)[1]]
-
-
-
+    #min1 = dist[np.argsort(dist)[0]]
+    #min2 = dist[np.argsort(dist)[1]]
 
     ### NEW CODEEE ###
     print("Relative minimum point")
     points = signal.argrelmin(dist, order=100)[0]
     values = dist[points]
+
+    # determine both peaks in the graphs
     min1, min2 = time[points[np.argpartition(values, 1)[:2]]]
     min1 -= time_difference[flightnum]
     min2 -= time_difference[flightnum]
 
+    # choose the one that matches data
     closestmin = min1 if abs(min1 - start_time[flightnum] + 7500) < abs(min2 - start_time[flightnum] + 7500) else min2
+
+
+    # check values
     print ("Drone", flightnum, closestmin - expected_closest_point_time[flightnum], closestmin )
+
+
     min_time =time[minimum]
-    plt.figure()
-    plt.axvline(x=closestmin, color='g', label='Actual closest approach')
- 
+
+    fig, ax = plt.subplots(1)
+    ax.minorticks_on()
+    #plt.figure()
+    ax.axvline(x=closestmin, color='g', label='GPS closest approach')
     clock_difference = np.abs(min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
-    plt.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
-    plt.axvline(x=start_time[flightnum], color='b', label='Start')
-    plt.axvline(x=start_time[flightnum] + 15000, color='r', label='End')
-    plt.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="red", alpha=0.5)
-    plt.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='black', label = 'Theo')
+    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
+    ax.axvline(x=start_time[flightnum], color='black')
+    ax.axvline(x=start_time[flightnum] + 15000, color='black')
+    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'interval')
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='orange', label = 'Theo 16')
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_2[flightnum], color='red', label='Theo 12')
     # plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
 
-    plt.xlabel("GPS time (ms)")
-    plt.ylabel("Geometrical distance from microphone (m)")
+    ax.grid(True)
+    ax.set_xlabel("GPS time (ms)")
+    ax.set_ylabel("Geometrical distance from microphone (m)")
 
-    plt.title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
-    plt.legend()
+    ax.set_xlim(30000, expected_closest_point_time[flightnum] + 80000)
+
+    ax.set_title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
+    ax.legend()
     plt.show()
-
-    #print(min(dist))
 
 
 for i in range(1, 6):
