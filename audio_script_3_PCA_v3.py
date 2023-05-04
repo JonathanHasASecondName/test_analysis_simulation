@@ -238,16 +238,16 @@ for flight_number in range(1, 6):
 
     img = plt.imread("drone.png")
 
-    fig, ax = plt.subplots(3, 1, gridspec_kw={'height_ratios': [3, 4, 1]})
+    fig, ax = plt.subplots(3, 1, gridspec_kw={'height_ratios': [5,4,1]})
 
     fig.suptitle(f"Drone {flight_number}")
 
     ax[0].minorticks_on()
     ax[0].plot(mic16_t, mic16_eigenloudness,color="blue", linewidth=0.5)
     ax[0].plot(mic12_t, mic12_eigenloudness, color="red", linewidth=0.5)
-    ax[0].set_ylabel('Eigenloudness [dB]')
+    ax[0].set_ylabel('Eigenloudness [dB]',fontsize=10)
     #ax[0].imshow(img,extent=[timeof,timeof+img.shape[1],red[maxpoint],red[maxpoint]+img.shape[0]])
-    ax[0].set_xlabel('Time [sec]')
+    ax[0].set_xlabel('Time [sec]',fontsize=10)
     ax[0].vlines(mic16_close, np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95,
                  label="$t_{ca}$="+f"{round(float(mic16_close), 1)} s (Var: {round(float(mic16_var)*100,1)}%)", colors="blue", linewidth=0.5)
     ax[0].vlines(mic12_close, np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95,
@@ -258,21 +258,35 @@ for flight_number in range(1, 6):
     ax[0].grid(linestyle='-', which='major', linewidth=0.9)
     ax[0].grid(linestyle=':', which='minor',linewidth=0.5)
 
+    plt.subplots_adjust(hspace=0.06)
+
     ax[1].minorticks_on()
     ax[1].pcolormesh(t, f, Sxx, cmap='jet')
-    ax[1].set_ylabel('Frequency [Hz]')
-    ax[1].set_xlabel('Time [sec]')
+    ax[1].set_ylabel('Frequency [Hz]',fontsize=10)
+    ax[1].set_xlabel('Time [sec]',fontsize=10)
     ax[1].set_xlim(t[0], t[-1])
     mappable = ax[1].pcolormesh(t, f, Sxx, cmap='jet')
-    fig.colorbar(mappable, ax=ax[1], label="Power/Frequency [dB/Hz]", orientation="vertical")
+    cbar = fig.colorbar(mappable, ax=ax[1], label="Power [dB/Hz]", orientation="vertical")
+    cbar.ax.tick_params(labelsize=10)
     ax[1].set_yscale("log")
     ax[1].axis(ymin=10, ymax=500)
 
-    ax[2].axis('off')
-    ax[2].table(cellText=[a], colLabels=None, cellLoc='center', loc='center')
-    ax[2].set_title(f"Top {target_freqs} Characteristic Frequencies [Hz]", y=0.7,fontsize=12)
+    table_data = [mic16_freqs, mic12_freqs]
+    row_labels = ["Mic 16", "Mic 12"]
+    col_labels = [f"$f_{i + 1}$" for i in range(len(mic12_freqs))]
+    ax[2].axis("off")
+    #ax[2].axis("tight")
+    table = ax[2].table(cellText=table_data,
+                         cellLoc='center',
+                         rowLabels=row_labels,
+                         colLabels=col_labels,
+                         loc="center")
+    table.auto_set_font_size(True)
+    table.set_fontsize(10)
+    table.scale(1, 1.5)
+    ax[2].set_title(f"Top {target_freqs} Characteristic Frequencies [Hz]",y=1.5,fontsize=10)
 
-    plt.subplots_adjust(hspace=0.25)
+    plt.subplots_adjust(hspace=0.1)
     plt.tight_layout()
     plt.savefig(fname=f"Drone {flight_number} PCA Combined",dpi=900)
 
