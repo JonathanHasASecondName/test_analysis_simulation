@@ -59,7 +59,6 @@ Read, Produce & Truncate Data
 
 for flight_number in range(1, 6):
 
-
     # Read Raw Data
     main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
     main_data = read_csv(main_file)
@@ -67,8 +66,8 @@ for flight_number in range(1, 6):
 
     # Produce Spectrogram Data
     f, t, Sxx = signal.spectrogram(main_data, fs=50000, nperseg=n_perseg, nfft=int(n_perseg*16), noverlap=int(n_perseg*0.8))
-    # Truncate Data
 
+    # Truncate Data
     f = f[:n_frequencies]
     Sxx_legacy = Sxx
     Sxx = 10 * np.log10(Sxx_legacy)
