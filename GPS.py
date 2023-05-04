@@ -7,8 +7,6 @@ from scipy import signal
 from gps_coords import haversine
 
 time_difference = [-1, 61451, -636, 84195, 28821, 17895]
-limit_down = [-1, 300, ] #where data from the excel file starts to matter
-limit_up = [-1, 650,  ] #where data from the excel file is not relevant anymore
 
 start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
@@ -194,7 +192,7 @@ def closest_point(flightnum):
     min2 -= time_difference[flightnum]
 
     closestmin = min1 if abs(min1 - start_time[flightnum] + 7500) < abs(min2 - start_time[flightnum] + 7500) else min2
-    
+    print ("Drone", flightnum, closestmin - expected_closest_point_time[flightnum], closestmin )
     min_time =time[minimum]
     plt.figure()
     plt.axvline(x=closestmin, color='g', label='Actual closest approach')

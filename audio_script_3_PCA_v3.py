@@ -61,6 +61,7 @@ for flight_number in range(1, 6):
 
     ### ---- MICROPHONE 12 ---- ###
 
+
     # Read Raw Data
     main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
     main_data = read_csv(main_file)
@@ -70,6 +71,7 @@ for flight_number in range(1, 6):
     f, t, Sxx = signal.spectrogram(main_data, fs=50000, nperseg=n_perseg, nfft=int(n_perseg*16), noverlap=int(n_perseg*0.8))
 
     # Truncate Data
+
     f = f[:n_frequencies]
     Sxx_legacy = Sxx
     Sxx = 10 * np.log10(Sxx_legacy)
@@ -241,10 +243,9 @@ for flight_number in range(1, 6):
     ax[0].set_ylabel('Eigenloudness [dB]')
     #ax[0].imshow(img,extent=[timeof,timeof+img.shape[1],red[maxpoint],red[maxpoint]+img.shape[0]])
     ax[0].set_xlabel('Time [sec]')
-    ax[0].vlines(timeof,np.min(red) * 1.05,np.max(red) * 0.95,label=f"Closest Approach: t= {round(float(timeof),1)} s",colors="red")
+    ax[0].vlines(timeof,np.min(red) * 1.05,np.max(red) * 0.95)
     ax[0].set_ylim(np.min(red) * 1.05 , np.max(red) * 0.95)
     ax[0].set_xlim(t[0], t[-1])
-    ax[0].legend(fontsize="6")
     ax[0].grid(linestyle='-', which='major', linewidth=0.9)
     ax[0].grid(linestyle=':', which='minor',linewidth=0.5)
 
