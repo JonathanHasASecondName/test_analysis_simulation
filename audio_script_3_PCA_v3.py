@@ -141,6 +141,7 @@ for flight_number in range(1, 6):
     mic12_specgram = Sxx
     mic12_t = t
     mic12_f = f
+    mic12_close = timeof
 
     ### ---- MICROPHONE 16 ---- ###
 
@@ -225,6 +226,7 @@ for flight_number in range(1, 6):
     mic16_specgram = Sxx
     mic16_t = t
     mic16_f = f
+    mic16_close = timeof
 
     """
     Plot Graphs
@@ -237,12 +239,16 @@ for flight_number in range(1, 6):
     fig.suptitle(f"Drone {flight_number} - Var: {round(float(variance)*100,1)}%")
 
     ax[0].minorticks_on()
-    ax[0].plot(t, red,color="blue")
+    ax[0].plot(mic16_t, mic16_eigenloudness,color="blue")
+    ax[0].plot(mic12_t, mic12_eigenloudness, color="red")
     ax[0].set_ylabel('Eigenloudness [dB]')
     #ax[0].imshow(img,extent=[timeof,timeof+img.shape[1],red[maxpoint],red[maxpoint]+img.shape[0]])
     ax[0].set_xlabel('Time [sec]')
-    ax[0].vlines(timeof,np.min(red) * 1.05,np.max(red) * 0.95,label=f"Closest Approach: t= {round(float(timeof),1)} s",colors="red")
-    ax[0].set_ylim(np.min(red) * 1.05 , np.max(red) * 0.95)
+    ax[0].vlines(timeof, np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95,
+                 label=f"Closest Approach: t= {round(float(mic16_close), 1)} s", colors="blue")
+    ax[0].vlines(timeof, np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95,
+                 label=f"Closest Approach: t= {round(float(mic12_close), 1)} s", colors="red")
+    ax[0].set_ylim(np.min(mic16_eigenloudness) * 1.05 , np.max(mic16_eigenloudness) * 0.95)
     ax[0].set_xlim(t[0], t[-1])
     ax[0].legend(fontsize="6")
     ax[0].grid(linestyle='-', which='major', linewidth=0.9)
