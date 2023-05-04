@@ -11,7 +11,7 @@ with open("data/Drone2_Flight1/Array_D2F1.csv", 'r') as f:
     data = list(csv.reader(f, delimiter=","))
 
 data = np.array(data, float)
-data = data[0,:]
+data = data[:,0]
 data = data[:len(data)-1]*volume
 
 print("Data OK")
@@ -22,12 +22,13 @@ print("Time OK")
 
 # compute sample rate, assuming times are in seconds
 sample_rate_hz = 50000
-sf.write('recording2.wav', data, sample_rate_hz)
+sf.write('recording_drone2.wav', data, sample_rate_hz)
 print("Output OK")
+
 
 """
 # load audio file
-sample_rate, data = wavfile.read('recording2.wav')
+sample_rate, data = wavfile.read('recording_drone2.wav')
 
 # create spectrogram
 frequencies, times, spectrogram = signal.spectrogram(data, fs=sample_rate)
