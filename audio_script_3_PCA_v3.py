@@ -59,6 +59,8 @@ Read, Produce & Truncate Data
 
 for flight_number in range(1, 6):
 
+    ### ---- MICROPHONE 12 ---- ###
+
     # Read Raw Data
     main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
     main_data = read_csv(main_file)
@@ -132,11 +134,97 @@ for flight_number in range(1, 6):
             target_freqs += 1
             counter = 0
 
-    #text_f = []
-    #for i in range(len(a)):
-    #    text_f.append(str(a[i]))
+    print("Cleaned Top Frequencies (Mic 12)",a)
 
-    print("Cleaned Top Frequencies",a)
+    mic12_freqs = a
+    mic12_eigenloudness = red
+    mic12_specgram = Sxx
+    mic12_t = t
+    mic12_f = f
+
+    ### ---- MICROPHONE 16 ---- ###
+
+    # Read Raw Data
+    main_file = f"data/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
+    main_data = read_csv(main_file)
+    main_data = preprocess_data(main_data)
+
+    # Produce Spectrogram Data
+    f, t, Sxx = signal.spectrogram(main_data, fs=50000, nperseg=n_perseg, nfft=int(n_perseg * 16),
+                                   noverlap=int(n_perseg * 0.8))
+
+    # Truncate Data
+    f = f[:n_frequencies]
+    Sxx_legacy = Sxx
+    Sxx = 10 * np.log10(Sxx_legacy)
+    Sxx[Sxx < -125] = -125
+    Sxx = Sxx[:n_frequencies, :]
+
+    """
+    Perform PCA
+    -Sxx: Pressure Levels in [dB]
+    -Sxx_legacy: Pressure Levels in [Pa]
+    """
+
+    # Reduce
+    pca = PCA(1)
+    red = np.array(pca.fit_transform(Sxx_legacy.T)[:, 0])
+    weights = pca.components_.reshape(-1)
+    weighter = np.sum(weights)
+    variance = pca.explained_variance_ratio_
+    red /= weighter
+
+    # Post-Processing
+    min = abs(np.min(red))
+    red += min
+    red = 10 * np.log10(red)  # comment if [Pa]
+    preinf = np.min(red[np.isfinite(red)])  # comment if [Pa]
+    red[np.isneginf(red)] = preinf  # comment if [Pa]
+    maxpoint = np.where(red == np.amax(red))
+    timeof = t[maxpoint]
+
+    """
+    Obtain Main Frequencies
+    """
+
+    probe = rd.randint(70, 150)
+    counter = 0
+    while True:
+        top = np.argsort(-weights.T)[:probe]
+        fund_w = [weights[i] for i in top]
+        fund_f = np.asarray([f[i] for i in top])
+        fund_f_round = np.round(fund_f, 0)
+        f_set = set(fund_f_round)
+        f_set = np.asarray(list(f_set))
+        a = f_set
+        mask = masking(a)
+        while True:
+            a = cropping(a)
+            mask = masking(a)
+            if len(mask) * 2 == sum(mask):
+                for i in range(len(a)):
+                    a[i] = round(a[i], 1)
+                    a = np.array(a)
+                break
+        if len(a) < target_freqs:
+            probe += rd.randint(5, 20)
+            counter += 1
+        if len(a) > target_freqs:
+            probe -= rd.randint(5, 20)
+            counter += 1
+        if len(a) == target_freqs:
+            break
+        if counter >= 100:
+            target_freqs += 1
+            counter = 0
+
+    print("Cleaned Top Frequencies (Mic 16)", a)
+
+    mic16_freqs = a
+    mic16_eigenloudness = red
+    mic16_specgram = Sxx
+    mic16_t = t
+    mic16_f = f
 
     """
     Plot Graphs
@@ -149,7 +237,7 @@ for flight_number in range(1, 6):
     fig.suptitle(f"Drone {flight_number} - Var: {round(float(variance)*100,1)}%")
 
     ax[0].minorticks_on()
-    ax[0].plot(t, red)
+    ax[0].plot(t, red,color="blue")
     ax[0].set_ylabel('Eigenloudness [dB]')
     #ax[0].imshow(img,extent=[timeof,timeof+img.shape[1],red[maxpoint],red[maxpoint]+img.shape[0]])
     ax[0].set_xlabel('Time [sec]')
