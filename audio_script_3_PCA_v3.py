@@ -61,7 +61,7 @@ for flight_number in range(1, 6):
 
 
     # Read Raw Data
-    main_file = f"data/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
+    main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
     main_data = read_csv(main_file)
     main_data = preprocess_data(main_data)
 
@@ -154,9 +154,10 @@ for flight_number in range(1, 6):
     ax[0].set_ylabel('Eigenloudness [dB]')
     #ax[0].imshow(img,extent=[timeof,timeof+img.shape[1],red[maxpoint],red[maxpoint]+img.shape[0]])
     ax[0].set_xlabel('Time [sec]')
-    ax[0].vlines(timeof,np.min(red) * 1.05,np.max(red) * 0.95)
+    ax[0].vlines(timeof,np.min(red) * 1.05,np.max(red) * 0.95,label=f"Closest Approach: t= {round(float(timeof),1)} s",colors="red")
     ax[0].set_ylim(np.min(red) * 1.05 , np.max(red) * 0.95)
     ax[0].set_xlim(t[0], t[-1])
+    ax[0].legend(fontsize="6")
     ax[0].grid(linestyle='-', which='major', linewidth=0.9)
     ax[0].grid(linestyle=':', which='minor',linewidth=0.5)
 
@@ -176,6 +177,6 @@ for flight_number in range(1, 6):
 
     plt.subplots_adjust(hspace=0.25)
     plt.tight_layout()
-    plt.savefig(fname=f"Drone {flight_number} PCA New (dB)",dpi=900)
+    plt.savefig(fname=f"Drone {flight_number} PCA New (Mic 12)",dpi=900)
 
     plt.show()
