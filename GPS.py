@@ -10,8 +10,8 @@ time_difference = [-1, 61451, -636, 84195, 28821, 17895]
 
 start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
-expected_closest_point_time = [-1, 14900, 8300, 7200, 6700, 6200]
-expected_closest_point_time_2 = [-1, 14900, 8400, 8500, 6250, 6000]
+expected_closest_point_time = [-1, 14900, 8400, 8500, 6250, 6000]
+expected_closest_point_time_12 = [-1, 14900, 8300, 8250, 5750, 3000]
 def plot_mic_array():
 
     darray = np.loadtxt("data/config.txt")
@@ -171,6 +171,14 @@ def closest_point(flightnum):
     # finding the minimum distance
     minimum = np.nanargmin(dist[:1500])
     dist[0] = dist[1]
+
+    sub_x = x - (0.0279)
+    sub_y = y - (1.6998)
+    dist_12 = np.sqrt(np.square(sub_x) + np.square(sub_y))
+
+
+    minimum_12 = np.nanargmin(dist_12[:1500])
+    dist_12[0] = dist_12[1]
     #min1 = dist[np.argsort(dist)[0]]
     #min2 = dist[np.argsort(dist)[1]]
 
@@ -187,7 +195,20 @@ def closest_point(flightnum):
     # choose the one that matches data
     closestmin = min1 if abs(min1 - start_time[flightnum] + 7500) < abs(min2 - start_time[flightnum] + 7500) else min2
 
+    ### MICROPHONE 12 ###
+    print("Relative minimum point")
+    points = signal.argrelmin(dist_12, order=100)[0]
+    values_12 = dist_12[points]
 
+    '''
+    # determine both peaks in the graphs
+    min1, min2 = time[points[np.argpartition(values, 1)[:2]]]
+    min1 -= time_difference[flightnum]
+    min2 -= time_difference[flightnum]
+
+    # choose the one that matches data
+    closestmin_12 = min1 if abs(min1 - start_time[flightnum] + 7500) < abs(min2 - start_time[flightnum] + 7500) else min2
+    '''
     # check values
     print ("Drone", flightnum, closestmin - expected_closest_point_time[flightnum], closestmin )
 
@@ -198,20 +219,35 @@ def closest_point(flightnum):
     ax.minorticks_on()
     #plt.figure()
     ax.axvline(x=closestmin, color='g', label='GPS closest approach')
+
+    clock_difference = np.abs(
+        min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
+    '''
+    # CLOCK DIFFERENCE ESTIMATE
     clock_difference = np.abs(min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
-    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist))
+    clock_difference_12 = np.abs(
+        closestmin_12 - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time_12[flightnum])
+    avg_clock_difference = np.average(clock_difference, clock_difference_12)
+    '''
+
+    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist), linewidth="0.8")
+    ax.plot(data[:, 0] - time_difference[flightnum], np.transpose(dist_12), linewidth="0.8")
     ax.axvline(x=start_time[flightnum], color='black')
     ax.axvline(x=start_time[flightnum] + 15000, color='black')
-    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'interval')
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='orange', label = 'Theo 16')
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_2[flightnum], color='red', label='Theo 12')
+    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'interval', linewidth="0.3")
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='orange', label = 'Theo 16', linewidth="1")
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_12[flightnum], color='red', label='Theo 12', linewidth="1")
     # plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
+
+
+    #Scatter point
+    ax.scatter (closestmin, dist[int((closestmin + time_difference[flightnum])/100)], marker="*", color='green')
 
     ax.grid(True)
     ax.set_xlabel("GPS time (ms)")
     ax.set_ylabel("Geometrical distance from microphone (m)")
 
-    ax.set_xlim(30000, expected_closest_point_time[flightnum] + 80000)
+    ax.set_xlim(40000, expected_closest_point_time[flightnum] + 80000)
 
     ax.set_title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
     ax.legend()
