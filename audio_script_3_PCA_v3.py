@@ -272,6 +272,6 @@ for flight_number in range(1, 6):
 
     plt.subplots_adjust(hspace=0.25)
     plt.tight_layout()
-    plt.savefig(fname=f"Drone {flight_number} PCA New (Mic 12)",dpi=900)
+    plt.savefig(fname=f"Drone {flight_number} PCA Combined",dpi=900)
 
     plt.show()
