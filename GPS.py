@@ -251,7 +251,7 @@ def closest_point(flightnum):
     ax.set_xlabel("GPS time (ms)")
     ax.set_ylabel("Geometrical distance from microphone (m)")
 
-    ax.set_xlim(40000, expected_closest_point_time[flightnum] + 80000)
+    ax.set_xlim(30000, expected_closest_point_time[flightnum] + 80000)
 
     ax.set_title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
     ax.legend()
