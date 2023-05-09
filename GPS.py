@@ -230,13 +230,13 @@ def closest_point(flightnum):
     avg_clock_difference = np.average(clock_difference, clock_difference_12)
     '''
 
-    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist), linewidth="0.8")
-    ax.plot(data[:, 0] - time_difference[flightnum], np.transpose(dist_12), linewidth="0.8")
+    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist), linewidth=0.8)
+    ax.plot(data[:, 0] - time_difference[flightnum], np.transpose(dist_12), linewidth=0.8)
     ax.axvline(x=start_time[flightnum], color='black')
     ax.axvline(x=start_time[flightnum] + 15000, color='black')
-    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'interval', linewidth="0.3")
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='orange', label = 'Theo 16', linewidth="1")
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_12[flightnum], color='red', label='Theo 12', linewidth="1")
+    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'interval', linewidth=0.3)
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='orange', label = 'Theo 16', linewidth=1)
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_12[flightnum], color='red', label='Theo 12', linewidth=1)
     # plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
 
 
