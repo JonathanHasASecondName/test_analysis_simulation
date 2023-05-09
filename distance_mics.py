@@ -115,8 +115,8 @@ for i in range(0,5):
     plt.plot(t,diffs[i],linewidth=1,label=f"Drone {i+1}",color=colors[i],alpha=0.5)
     plt.plot(t, r, linewidth=0.8,linestyle='--',color=colors[i])
 
-plt.text(0.2, 17, 'Mic 16', fontsize=15, color='blue')
-plt.text(0.2, -18.5, 'Mic 12', fontsize=15, color='red')
+plt.text(0.2, 17, 'Mic 12', fontsize=15, color='blue')
+plt.text(0.2, -18.5, 'Mic 16', fontsize=15, color='red')
 plt.hlines(0,0,15,"k",linewidth=0.7)
 plt.xlabel("Time [s]")
 plt.ylabel("Loudness Difference [dB]")
