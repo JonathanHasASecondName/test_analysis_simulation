@@ -251,8 +251,6 @@ for flight_number in range(1, 6):
     Plot Graphs
     """
 
-    img = plt.imread("drone.png")
-
     fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3,2]})
 
     fig.suptitle(f"Drone {flight_number} Eigenloudness vs Time")
@@ -261,7 +259,6 @@ for flight_number in range(1, 6):
     ax[0].plot(mic16_t, mic16_eigenloudness,color="blue", linewidth=0.5)
     ax[0].plot(mic12_t, mic12_eigenloudness, color="red", linewidth=0.5)
     ax[0].set_ylabel('Eigenloudness [dB]',fontsize=10)
-    #ax[0].imshow(img,extent=[timeof,timeof+img.shape[1],red[maxpoint],red[maxpoint]+img.shape[0]])
     ax[0].set_xlabel('Time [sec]',fontsize=10)
     ax[0].vlines(mic16_close, np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95,
                  label="Mic 16: $t_{ca}$="+f"{round(float(mic16_close), 1)} s", colors="blue", linewidth=0.5)
@@ -294,7 +291,6 @@ for flight_number in range(1, 6):
     row_labels = ["Mic 16", "Mic 12"]
     col_labels = [f"$f_{i + 1}$ [Hz]" for i in range(len(mic12_freqs))] + ["Var [%]"]
     ax[1].axis("off")
-    #ax[2].axis("tight")
     table = ax[1].table(cellText=table_data,
                          cellLoc='center',
                          rowLabels=row_labels,
