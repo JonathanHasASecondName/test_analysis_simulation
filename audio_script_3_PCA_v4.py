@@ -93,8 +93,8 @@ for flight_number in range(1, 6):
 
     # Reduce
     pca = PCA(1)
-    red = np.array(pca.fit_transform(Sxx_legacy_d.T)[:, 0])
-    #red = np.array(pca.fit_transform(Sxx_legacy.T)[:, 0])
+    #red = np.array(pca.fit_transform(Sxx_legacy_d.T)[:, 0])
+    red = np.array(pca.fit_transform(Sxx_legacy.T)[:, 0])
     weights = pca.components_.reshape(-1)
     weighter = np.sum(weights)
     variance = pca.explained_variance_ratio_
@@ -186,8 +186,8 @@ for flight_number in range(1, 6):
 
     # Reduce
     pca = PCA(1)
-    red = np.array(pca.fit_transform(Sxx_legacy_d.T)[:, 0])
-    #red = np.array(pca.fit_transform(Sxx_legacy.T)[:, 0])
+    #red = np.array(pca.fit_transform(Sxx_legacy_d.T)[:, 0])
+    red = np.array(pca.fit_transform(Sxx_legacy.T)[:, 0])
     weights = pca.components_.reshape(-1)
     weighter = np.sum(weights)
     variance = pca.explained_variance_ratio_
@@ -307,6 +307,6 @@ for flight_number in range(1, 6):
 
     plt.subplots_adjust(hspace=0.1)
     plt.tight_layout()
-    plt.savefig(fname=f"Drone {flight_number} PCA Combined (Denoised)",dpi=900)
+    plt.savefig(fname=f"Drone {flight_number} PCA Combined",dpi=900)
 
     plt.show()
