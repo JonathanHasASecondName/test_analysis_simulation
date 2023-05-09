@@ -241,7 +241,11 @@ def closest_point(flightnum):
 
 
     #Scatter point
-    ax.scatter (closestmin, dist[int((closestmin + time_difference[flightnum])/100)], marker="*", color='green')
+    if flightnum == 1 or flightnum == 2:
+        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/200)], marker="*", color='green')
+    else:
+        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/100)], marker="*", color='green')
+
 
     ax.grid(True)
     ax.set_xlabel("GPS time (ms)")
