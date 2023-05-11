@@ -1,19 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy import signal
-from sklearn.decomposition import PCA
-import numpy.random as rd
 import pywt
 from scipy.stats import linregress
 
 # Constants
-p0 = 20*(10**(-6))
+p0 = 20 * (10 ** (-6))
+
 
 # Function Definitions
 def read_csv(filename):
     df = pd.read_csv(filename, header=None)
     return df.to_numpy()
+
 
 def preprocess_data(data):
     data = np.squeeze(data)
@@ -21,16 +20,19 @@ def preprocess_data(data):
     data = np.nan_to_num(data)
     return data
 
+
 def divide_chunks(l, n):
     # looping till length l
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def denoising(S,k=0.5):
+
+def denoising(S, k=0.5):
     threshold = np.std(S) * np.sqrt(2 * np.log(len(S)))
     coeffs = pywt.wavedec(S, 'db4', mode='per')
     coeffs[1:] = (pywt.threshold(i, value=k * threshold, mode='soft') for i in coeffs[1:])
     return pywt.waverec(coeffs, 'db4', mode='per')
+
 
 def remove_outliers(data, k):
     mean = np.mean(data)
@@ -39,7 +41,8 @@ def remove_outliers(data, k):
     filtered_data = [x for x in data if abs(x - mean) <= threshold]
     return filtered_data
 
-def data(flight_number,mic,batch=5000):
+
+def data(flight_number, mic, batch=5000):
     if mic == 12:
         main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
         main_data = read_csv(main_file)
@@ -63,12 +66,14 @@ def data(flight_number,mic,batch=5000):
             rms_data.append(np.sqrt(x))
         return rms_data
 
+
 def ctz(lst):
     closest = lst[0]
     for i in range(1, len(lst)):
         if abs(lst[i]) < abs(closest):
             closest = lst[i]
     return closest
+
 
 def good_log(data):
     mic = []
@@ -81,21 +86,21 @@ def good_log(data):
         mic.append(x)
     return mic
 
-diffs = []
-for i in range(1,6):
 
+diffs = []
+for i in range(1, 6):
     b = 100
 
-    main_file_16 = data(i,16,b)
-    main_file_12 = data(i,12,b)
+    main_file_16 = data(i, 16, b)
+    main_file_12 = data(i, 12, b)
 
     mic16 = good_log(main_file_16)
     mic12 = good_log(main_file_12)
 
-    diff = np.array(mic12)-np.array(mic16)
-    diff_n = remove_outliers(diff,1)
+    diff = np.array(mic12) - np.array(mic16)
+    diff_n = remove_outliers(diff, 1)
 
-    #diffs.append(diff)
+    # diffs.append(diff)
     diffs.append(diff_n)
 
 fig, ax = plt.subplots(1, 1)
@@ -105,28 +110,23 @@ ax.grid(linestyle=':', which='minor', linewidth=0.5)
 ax.axhspan(0, 20, alpha=0.05, color='blue')
 ax.axhspan(-20, 0, alpha=0.05, color='red')
 
+colors = ["red", "blue", "green", "#A52A2A", "magenta"]
 
-colors = ["red","blue","green","#A52A2A","magenta"]
-
-for i in range(0,5):
-    t = np.linspace(0,15,len(diffs[i]))
+for i in range(0, 5):
+    t = np.linspace(0, 15, len(diffs[i]))
     slope, intercept, r_value, p_value, std_err = linregress(t, diffs[i])
-    r = slope*t+intercept
-    plt.plot(t,diffs[i],linewidth=1,label=f"Drone {i+1}",color=colors[i],alpha=0.5)
-    plt.plot(t, r, linewidth=0.8,linestyle='--',color=colors[i])
+    r = slope * t + intercept
+    plt.plot(t, diffs[i], linewidth=1, label=f"Drone {i + 1}", color=colors[i], alpha=0.5)
+    plt.plot(t, r, linewidth=0.8, linestyle='--', color=colors[i])
 
 plt.text(0.2, 17, 'Mic 12', fontsize=15, color='blue')
 plt.text(0.2, -18.5, 'Mic 16', fontsize=15, color='red')
-plt.hlines(0,0,15,"k",linewidth=0.7)
+plt.hlines(0, 0, 15, "k", linewidth=0.7)
 plt.xlabel("Time [s]")
 plt.ylabel("Loudness Difference [dB]")
-plt.xlim((0,15))
-plt.ylim((-20,20))
+plt.xlim((0, 15))
+plt.ylim((-20, 20))
 plt.xticks(range(0, 16, 3))
 plt.legend(fontsize=7)
-plt.savefig(fname=f"Drone Distance Analysis",dpi=900)
+plt.savefig(fname="Drone Distance Analysis", dpi=900)
 plt.show()
-
-
-
-

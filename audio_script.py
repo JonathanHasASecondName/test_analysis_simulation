@@ -9,18 +9,18 @@ with open("data/Drone5_Flight1/Array_D5F1.csv", 'r') as f:
     data = list(csv.reader(f, delimiter=","))
 
 data = np.array(data, float)
-data = data[:,0]
-data = data[:len(data)-1]*volume
+data = data[:, 0]
+data = data[:len(data) - 1] * volume
 
 # Apply wavelet denoising
 threshold = np.std(data) * np.sqrt(2 * np.log(len(data)))
 coeffs = pywt.wavedec(data, 'db4', mode='per')
-coeffs[1:] = (pywt.threshold(i, value=0.5*threshold, mode='soft') for i in coeffs[1:])
+coeffs[1:] = (pywt.threshold(i, value=0.5 * threshold, mode='soft') for i in coeffs[1:])
 denoised_data = pywt.waverec(coeffs, 'db4', mode='per')
 
 print("Data OK")
 
-t = np.arange(0,15,1/50000)
+t = np.arange(0, 15, 1 / 50000)
 
 print("Time OK")
 
