@@ -195,6 +195,9 @@ def closest_point(flightnum):
     # choose the one that matches data
     closestmin = min1 if abs(min1 - start_time[flightnum] + 7500) < abs(min2 - start_time[flightnum] + 7500) else min2
 
+    # determine value at closest min
+    print(min(dist))
+    print(closestmin)
     ### MICROPHONE 12 ###
     print("Relative minimum point")
     points = signal.argrelmin(dist_12, order=100)[0]
@@ -218,7 +221,7 @@ def closest_point(flightnum):
     fig, ax = plt.subplots(1)
     ax.minorticks_on()
     #plt.figure()
-    ax.axvline(x=closestmin, color='g', label='GPS closest approach')
+    #ax.axvline(x=closestmin, color='g', label='GPS closest approach')
 
     clock_difference = np.abs(
         min_time - time_difference[flightnum] - start_time[flightnum] - expected_closest_point_time[flightnum])
@@ -230,31 +233,42 @@ def closest_point(flightnum):
     avg_clock_difference = np.average(clock_difference, clock_difference_12)
     '''
 
-    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist), linewidth=0.8)
-    ax.plot(data[:, 0] - time_difference[flightnum], np.transpose(dist_12), linewidth=0.8)
-    ax.axvline(x=start_time[flightnum], color='black')
-    ax.axvline(x=start_time[flightnum] + 15000, color='black')
-    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'interval', linewidth=0.3)
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='orange', label = 'Theo 16', linewidth=1)
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_12[flightnum], color='red', label='Theo 12', linewidth=1)
+    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist), label = "Mic 16", color = '#540D6E', linewidth=0.8, zorder = 1)
+    ax.plot(data[:, 0] - time_difference[flightnum], np.transpose(dist_12), label = "Mic 12", color ='#EE4266', linewidth=0.8, zorder = 1)
+    #ax.axvline(x=start_time[flightnum] + 15000, color='black', zorder = 1)
+    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, alpha = 0.3, color = '#FFD23F', zorder = 0)
+    #ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'Interval', linewidth=0.2, zorder = 1)
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='#0FA3B1', label = 'Theo 16', linewidth=1, zorder = 1)
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_12[flightnum], color='#3BCEAC', label='Theo 12', linewidth=1, zorder = 1)
     # plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
 
 
     #Scatter point
     if flightnum == 1 or flightnum == 2:
-        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/200)], marker="*", color='green')
+        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/200)], marker="*", label = "GPS closest time", zorder = 100, color='#6B0504', s =170)
+    elif flightnum == 3 or flightnum == 5:
+        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/100)], marker="*", label = "GPS closest time", zorder = 100, color='#6B0504', s =170)
+        print(dist[int((closestmin + time_difference[flightnum])/100)])
     else:
-        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/100)], marker="*", color='green')
+        ax.scatter(closestmin, dist_12[np.argmin(dist_12)] + 9, marker = "*", label = "GPS closest time", color = '#6B0504', zorder = 5000, s = 170)
 
+
+
+    if flightnum == 4:
+        print(dist_12[np.argmin(dist_12)])
+        print(dist[(np.argmin(dist))])
 
     ax.grid(True)
     ax.set_xlabel("GPS time (ms)")
     ax.set_ylabel("Geometrical distance from microphone (m)")
 
-    ax.set_xlim(30000, expected_closest_point_time[flightnum] + 80000)
+    #ax.set_xlim(30000, expected_closest_point_time[flightnum] + 80000)
+    ax.set_xlim(50000, 100000)
+    #ax.set_xticklabels(labels)
 
-    ax.set_title("Drone" + str(flightnum) + " - " + str(clock_difference) + "(clock difference milisec)")
+    ax.set_title("Drone " + str(flightnum) + " - " + "Clock Difference: " +str(clock_difference) +" ms" )
     ax.legend()
+    plt.savefig(fname = f"Drone {flightnum} GPS", dpi = 900)
     plt.show()
 
 
