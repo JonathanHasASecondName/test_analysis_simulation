@@ -5,6 +5,7 @@ from scipy import signal
 from sklearn.decomposition import PCA
 import numpy.random as rd
 import pywt
+from sklearn.cluster import KMeans
 
 """
 Inputs & Functions
@@ -13,8 +14,9 @@ Inputs & Functions
 n_perseg = 1024 * 8 * 4  # number of FFTs
 n_frequencies = 1024 * (2 ** 6)  # frequencies to show on spectrogram
 flight_number = str(5)  # flight number
-target_freqs = 7  # number of "top" frequencies desired
+target_freqs = 5  # number of "top" frequencies desired
 hear = 20 * (10 ** (-6))  # hearing threshold
+probe = 200 # probe for frequency selection
 
 
 # Function Definitions
@@ -77,7 +79,6 @@ for flight_number in range(1, 6):
                                    noverlap=int(n_perseg * 0.8))
 
     # Truncate Data
-
     f = f[:n_frequencies]
     Sxx_legacy = Sxx
 
@@ -118,36 +119,14 @@ for flight_number in range(1, 6):
     Obtain Main Frequencies
     """
 
-    probe = rd.randint(70, 150)
-    counter = 0
-    while True:
-        top = np.argsort(-weights.T)[:probe]
-        fund_w = [weights[i] for i in top]
-        fund_f = np.asarray([f[i] for i in top])
-        fund_f_round = np.round(fund_f, 0)
-        f_set = set(fund_f_round)
-        f_set = np.asarray(list(f_set))
-        a = f_set
-        mask = masking(a)
-        while True:
-            a = cropping(a)
-            mask = masking(a)
-            if len(mask) * 2 == sum(mask):
-                for i in range(len(a)):
-                    a[i] = round(a[i], 1)
-                    a = np.array(a)
-                break
-        if len(a) < target_freqs:
-            probe += rd.randint(5, 20)
-            counter += 1
-        if len(a) > target_freqs:
-            probe -= rd.randint(5, 20)
-            counter += 1
-        if len(a) == target_freqs:
-            break
-        if counter >= 100:
-            target_freqs += 1
-            counter = 0
+    top = np.argsort(-weights.T)[:probe]
+    fund_w = [weights[i] for i in top]
+    fund_f = np.asarray([f[i] for i in top]).reshape(-1, 1)
+
+    kmeans = KMeans(n_clusters=int(target_freqs))
+    kmeans.fit(fund_f)
+
+    a = np.around(np.asarray(kmeans.cluster_centers_.T[0]),1)
 
     print("Cleaned Top Frequencies (Mic 12)", a)
 
@@ -211,36 +190,14 @@ for flight_number in range(1, 6):
     Obtain Main Frequencies
     """
 
-    probe = rd.randint(70, 150)
-    counter = 0
-    while True:
-        top = np.argsort(-weights.T)[:probe]
-        fund_w = [weights[i] for i in top]
-        fund_f = np.asarray([f[i] for i in top])
-        fund_f_round = np.round(fund_f, 0)
-        f_set = set(fund_f_round)
-        f_set = np.asarray(list(f_set))
-        a = f_set
-        mask = masking(a)
-        while True:
-            a = cropping(a)
-            mask = masking(a)
-            if len(mask) * 2 == sum(mask):
-                for i in range(len(a)):
-                    a[i] = round(a[i], 1)
-                    a = np.array(a)
-                break
-        if len(a) < target_freqs:
-            probe += rd.randint(5, 20)
-            counter += 1
-        if len(a) > target_freqs:
-            probe -= rd.randint(5, 20)
-            counter += 1
-        if len(a) == target_freqs:
-            break
-        if counter >= 100:
-            target_freqs += 1
-            counter = 0
+    top = np.argsort(-weights.T)[:probe]
+    fund_w = [weights[i] for i in top]
+    fund_f = np.asarray([f[i] for i in top]).reshape(-1, 1)
+
+    kmeans = KMeans(n_clusters=int(target_freqs))
+    kmeans.fit(fund_f)
+
+    a = np.around(np.asarray(kmeans.cluster_centers_.T[0]),1)
 
     print("Cleaned Top Frequencies (Mic 16)", a)
 
@@ -308,6 +265,6 @@ for flight_number in range(1, 6):
 
     plt.subplots_adjust(hspace=0.1)
     plt.tight_layout()
-    #plt.savefig(fname=f"Drone {flight_number} PCA Combined", dpi=900)
+    plt.savefig(fname=f"Drone {flight_number} PCA + K-Means Combined", dpi=900)
 
     plt.show()

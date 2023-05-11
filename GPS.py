@@ -12,8 +12,9 @@ start_time = [-1, 45000, 60000, 35000, 60000, 70000]
 
 expected_closest_point_time = [-1, 14900, 8400, 8500, 6250, 6000]
 expected_closest_point_time_12 = [-1, 14900, 8300, 8250, 5750, 3000]
-def plot_mic_array():
 
+
+def plot_mic_array():
     darray = np.loadtxt("data/config.txt")
 
     x = -1 * darray[:, -2]
@@ -25,6 +26,7 @@ def plot_mic_array():
 
     plt.show()
     return
+
 
 def plot_mic_array_corrected():
     darray = np.loadtxt("data/config.txt")
@@ -42,9 +44,10 @@ def plot_mic_array_corrected():
     plt.ylabel("y")
     plt.xlabel("x")
     plt.grid(linestyle='-', which='major', linewidth=0.9)
-    plt.grid(linestyle=':', which='minor',linewidth = 0.5)
+    plt.grid(linestyle=':', which='minor', linewidth=0.5)
     plt.show()
     return
+
 
 def plot_height_drone():
     dp = pd.read_csv("data/GPS_D1F1.csv")
@@ -58,25 +61,29 @@ def plot_height_drone():
     plt.show()
     return
 
+
 def convert_coords(filename):
     data = np.genfromtxt(filename, delimiter=',')
     converted = np.copy(data[:, :3])
     for index, i in enumerate(converted[:, 1:3]):
         converted[index, 1:3] = haversine(i)
 
-    x, y = converted[:, 1], converted[:, 2] #
+    x, y = converted[:, 1], converted[:, 2]  #
 
     return x, y
+
 
 def update(num, x, y, line):
     line.set_data(x[:num], y[:num])
     # line.axes.axis([0, 10, 0, 1])
     return line,
 
+
 def plot_one_flight(flightnum):
     x, y = convert_coords("data/GPS_D{}F1.csv".format(flightnum))
     plt.plot(x, y, "r")
     plt.show()
+
 
 def plot_all_flights():
     """
@@ -109,7 +116,6 @@ def animate_flight(filename):
 
 
 def drone_speed(flightnum):
-
     x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
     dp = pd.read_csv("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
     time = dp.iloc[:, 0].values
@@ -122,29 +128,30 @@ def drone_speed(flightnum):
     if len(x) == len(time):
 
         for i in range(1, len(time)):
-            distx = (x[i] - x[i-1])
-            disty = (y[i] - y[i-1])
-            dist_stamp = np.sqrt(distx **2 + disty **2)
-            #print()
-            #print(dist_stamp)
-            #print(time[i], time[i-1])
-            time_stamp = time[(i)] - time[i-1]
-            #print(time_stamp)
-            time_stamp = time_stamp*0.001  # convert to s
-            #print(time_stamp)
+            distx = (x[i] - x[i - 1])
+            disty = (y[i] - y[i - 1])
+            dist_stamp = np.sqrt(distx ** 2 + disty ** 2)
+            # print()
+            # print(dist_stamp)
+            # print(time[i], time[i-1])
+            time_stamp = time[(i)] - time[i - 1]
+            # print(time_stamp)
+            time_stamp = time_stamp * 0.001  # convert to s
+            # print(time_stamp)
             speed_stamp = dist_stamp / time_stamp
 
             speed.append(speed_stamp)
     else:
         print("tf bro")
-    #print(speed)
+    # print(speed)
     speed = np.asarray(speed)
     print("SPEED ", flightnum)
     print(np.mean(speed[100:-100]))
-    #print(np.sort(speed)[-200:])
-    #print(max(speed))
-    #print(speed_stamp)
+    # print(np.sort(speed)[-200:])
+    # print(max(speed))
+    # print(speed_stamp)
     return speed
+
 
 # plot_one_flight(1)
 # plot_all_flights()
@@ -152,17 +159,15 @@ def drone_speed(flightnum):
 # animate_flight("data/Drone1_Flight1/GPS_D1F1.csv")
 
 def closest_point(flightnum):
-
-
     x, y = convert_coords("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
-    data = np.genfromtxt("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum),delimiter=",")
+    data = np.genfromtxt("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum), delimiter=",")
 
     dp = pd.read_csv("data/Drone{0}_Flight1/GPS_D{0}F1.csv".format(flightnum))
     time = dp.iloc[:, 0]
 
-    #data = np.delete(data, 0, axis=0)
-    #x = np.delete(x, 0, axis=0)
-    #y = np.delete(y, 0, axis=0)
+    # data = np.delete(data, 0, axis=0)
+    # x = np.delete(x, 0, axis=0)
+    # y = np.delete(y, 0, axis=0)
 
     sub_x = x - (-0.0279)
     sub_y = y - (-1.6998)
@@ -176,11 +181,10 @@ def closest_point(flightnum):
     sub_y = y - (1.6998)
     dist_12 = np.sqrt(np.square(sub_x) + np.square(sub_y))
 
-
     minimum_12 = np.nanargmin(dist_12[:1500])
     dist_12[0] = dist_12[1]
-    #min1 = dist[np.argsort(dist)[0]]
-    #min2 = dist[np.argsort(dist)[1]]
+    # min1 = dist[np.argsort(dist)[0]]
+    # min2 = dist[np.argsort(dist)[1]]
 
     ### NEW CODEEE ###
     print("Relative minimum point")
@@ -210,14 +214,13 @@ def closest_point(flightnum):
     closestmin_12 = min1 if abs(min1 - start_time[flightnum] + 7500) < abs(min2 - start_time[flightnum] + 7500) else min2
     '''
     # check values
-    print ("Drone", flightnum, closestmin - expected_closest_point_time[flightnum], closestmin )
+    print("Drone", flightnum, closestmin - expected_closest_point_time[flightnum], closestmin)
 
-
-    min_time =time[minimum]
+    min_time = time[minimum]
 
     fig, ax = plt.subplots(1)
     ax.minorticks_on()
-    #plt.figure()
+    # plt.figure()
     ax.axvline(x=closestmin, color='g', label='GPS closest approach')
 
     clock_difference = np.abs(
@@ -230,22 +233,23 @@ def closest_point(flightnum):
     avg_clock_difference = np.average(clock_difference, clock_difference_12)
     '''
 
-    ax.plot(data[:, 0] - time_difference[flightnum],np.transpose(dist), linewidth=0.8)
+    ax.plot(data[:, 0] - time_difference[flightnum], np.transpose(dist), linewidth=0.8)
     ax.plot(data[:, 0] - time_difference[flightnum], np.transpose(dist_12), linewidth=0.8)
     ax.axvline(x=start_time[flightnum], color='black')
     ax.axvline(x=start_time[flightnum] + 15000, color='black')
-    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b", alpha=0.5, label = 'interval', linewidth=0.3)
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color ='orange', label = 'Theo 16', linewidth=1)
-    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_12[flightnum], color='red', label='Theo 12', linewidth=1)
+    ax.axvspan(start_time[flightnum], start_time[flightnum] + 15000, facecolor="none", hatch="//", edgecolor="b",
+               alpha=0.5, label='interval', linewidth=0.3)
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time[flightnum], color='orange', label='Theo 16',
+               linewidth=1)
+    ax.axvline(x=start_time[flightnum] + expected_closest_point_time_12[flightnum], color='red', label='Theo 12',
+               linewidth=1)
     # plt.axvline(min_time - time_difference[flightnum], color ='y', label = 'PASSBY')
 
-
-    #Scatter point
+    # Scatter point
     if flightnum == 1 or flightnum == 2:
-        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/200)], marker="*", color='green')
+        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum]) / 200)], marker="*", color='green')
     else:
-        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum])/100)], marker="*", color='green')
-
+        ax.scatter(closestmin, dist[int((closestmin + time_difference[flightnum]) / 100)], marker="*", color='green')
 
     ax.grid(True)
     ax.set_xlabel("GPS time (ms)")
@@ -261,6 +265,3 @@ def closest_point(flightnum):
 for i in range(1, 6):
     closest_point(i)
     # drone_speed(i)
-
-
-
