@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import signal
 from sklearn.decomposition import PCA
-import numpy.random as rd
 import pywt
 from sklearn.cluster import KMeans
 
@@ -16,7 +15,6 @@ n_frequencies = 1024 * (2 ** 6)  # frequencies to show on spectrogram
 flight_number = str(5)  # flight number
 target_freqs = 5  # number of "top" frequencies desired
 hear = 20 * (10 ** (-6))  # hearing threshold
-probe = 200 # probe for frequency selection
 
 
 # Function Definitions
@@ -61,74 +59,78 @@ def cropping(freqs):
     return new
 
 
-"""
-Read, Produce & Truncate Data
-"""
-
-for flight_number in range(1, 6):
-
-    ### ---- MICROPHONE 12 ---- ###
-
-    # Read Raw Data
-    main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
+def obtain(mic, flight_number):
+    if mic == 12:
+        main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
+    if mic == 16:
+        main_file = f"data/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
     main_data = read_csv(main_file)
     main_data = preprocess_data(main_data)
 
-    # Produce Spectrogram Data
     f, t, Sxx = signal.spectrogram(main_data, fs=50000, nperseg=n_perseg, nfft=int(n_perseg * 16),
                                    noverlap=int(n_perseg * 0.8))
-
-    # Truncate Data
     f = f[:n_frequencies]
     Sxx_legacy = Sxx
-
-    threshold = np.std(Sxx_legacy) * np.sqrt(2 * np.log(len(Sxx_legacy)))
-    coeffs = pywt.wavedec(Sxx_legacy, 'db4', mode='per')
-    coeffs[1:] = (pywt.threshold(i, value=0.5 * threshold, mode='soft') for i in coeffs[1:])
-    Sxx_legacy_d = pywt.waverec(coeffs, 'db4', mode='per')
 
     Sxx = 10 * np.log10(Sxx_legacy)
     Sxx[Sxx < -125] = -125
     Sxx = Sxx[:n_frequencies, :]
 
-    """
-    Perform PCA
-    -Sxx: Pressure Levels in [dB]
-    -Sxx_legacy: Pressure Levels in [Pa]
-    """
+    return f, t, Sxx_legacy, Sxx
 
-    # Reduce
-    pca = PCA(1)
-    # red = np.array(pca.fit_transform(Sxx_legacy_d.T)[:, 0])
-    red = np.array(pca.fit_transform(Sxx_legacy.T)[:, 0])
+
+def denoise(file, k):
+    threshold = np.std(file) * np.sqrt(2 * np.log(len(file)))
+    coeffs = pywt.wavedec(file, 'db4', mode='per')
+    coeffs[1:] = (pywt.threshold(i, value=k * threshold, mode='soft') for i in coeffs[1:])
+    return pywt.waverec(coeffs, 'db4', mode='per')
+
+
+def pca_data(file, n=1):
+    pca = PCA(n)
+    red = np.array(pca.fit_transform(file.T)[:, 0])
     weights = pca.components_.reshape(-1)
     weighter = np.sum(weights)
     variance = pca.explained_variance_ratio_
-    red /= weighter  # effectively turns weights into percentages
+    red /= weighter
+    return red, weights, variance
 
-    # Post-Processing
-    min = abs(np.min(red))
-    red += min
-    red = 10 * np.log10(red)  # comment if [Pa]
+
+def postprocessing(file):
+    min = abs(np.min(file))
+    file += min
+    red = 10 * np.log10(file)  # comment if [Pa]
     preinf = np.min(red[np.isfinite(red)])  # comment if [Pa]
     red[np.isneginf(red)] = preinf  # comment if [Pa]
     maxpoint = np.where(red == np.amax(red))
     timeof = t[maxpoint]
+    return red, maxpoint, timeof
 
-    """
-    Obtain Main Frequencies
-    """
 
+def main_freqs(f, weights, target_freqs, probe=200):
     top = np.argsort(-weights.T)[:probe]
     fund_w = [weights[i] for i in top]
     fund_f = np.asarray([f[i] for i in top]).reshape(-1, 1)
-
     kmeans = KMeans(n_clusters=int(target_freqs))
     kmeans.fit(fund_f)
+    a = np.sort(np.around(np.asarray(kmeans.cluster_centers_.T[0]), 1))
+    return a, fund_f, fund_w
 
-    a = np.around(np.asarray(kmeans.cluster_centers_.T[0]),1)
 
-    print("Cleaned Top Frequencies (Mic 12)", a)
+"""
+Read, Produce & Truncate Data
+"""
+
+for flight_number in range(1, 6):
+    ### ---- MICROPHONE 12 ---- ###
+
+    f, t, Sxx_legacy, Sxx = obtain(12, flight_number)
+
+    red, weights, variance = pca_data(Sxx_legacy)
+
+    red, maxpoint, timeof = postprocessing(red)
+
+    a, fund_f, fund_w = main_freqs(f, weights, target_freqs,180)
 
     mic12_freqs = a
     mic12_eigenloudness = red
@@ -140,66 +142,13 @@ for flight_number in range(1, 6):
 
     ### ---- MICROPHONE 16 ---- ###
 
-    # Read Raw Data
-    main_file = f"data/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
-    main_data = read_csv(main_file)
-    main_data = preprocess_data(main_data)
+    f, t, Sxx_legacy, Sxx = obtain(16, flight_number)
 
-    # Produce Spectrogram Data
-    f, t, Sxx = signal.spectrogram(main_data, fs=50000, nperseg=n_perseg, nfft=int(n_perseg * 16),
-                                   noverlap=int(n_perseg * 0.8))
+    red, weights, variance = pca_data(Sxx_legacy)
 
-    # Truncate Data
-    f = f[:n_frequencies]
-    Sxx_legacy = Sxx
+    red, maxpoint, timeof = postprocessing(red)
 
-    threshold = np.std(Sxx_legacy) * np.sqrt(2 * np.log(len(Sxx_legacy)))
-    coeffs = pywt.wavedec(Sxx_legacy, 'db4', mode='per')
-    coeffs[1:] = (pywt.threshold(i, value=0.5 * threshold, mode='soft') for i in coeffs[1:])
-    Sxx_legacy_d = pywt.waverec(coeffs, 'db4', mode='per')
-
-    Sxx = 10 * np.log10(Sxx_legacy)
-    Sxx[Sxx < -125] = -125
-    Sxx = Sxx[:n_frequencies, :]
-
-    """
-    Perform PCA
-    -Sxx: Pressure Levels in [dB]
-    -Sxx_legacy: Pressure Levels in [Pa]
-    """
-
-    # Reduce
-    pca = PCA(1)
-    # red = np.array(pca.fit_transform(Sxx_legacy_d.T)[:, 0])
-    red = np.array(pca.fit_transform(Sxx_legacy.T)[:, 0])
-    weights = pca.components_.reshape(-1)
-    weighter = np.sum(weights)
-    variance = pca.explained_variance_ratio_
-    red /= weighter  # effectively turns weights into percentages
-
-    # Post-Processing
-    min = abs(np.min(red))
-    red += min
-    red = 10 * np.log10(red)  # comment if [Pa]
-    preinf = np.min(red[np.isfinite(red)])  # comment if [Pa]
-    red[np.isneginf(red)] = preinf  # comment if [Pa]
-    maxpoint = np.where(red == np.amax(red))
-    timeof = t[maxpoint]
-
-    """
-    Obtain Main Frequencies
-    """
-
-    top = np.argsort(-weights.T)[:probe]
-    fund_w = [weights[i] for i in top]
-    fund_f = np.asarray([f[i] for i in top]).reshape(-1, 1)
-
-    kmeans = KMeans(n_clusters=int(target_freqs))
-    kmeans.fit(fund_f)
-
-    a = np.around(np.asarray(kmeans.cluster_centers_.T[0]),1)
-
-    print("Cleaned Top Frequencies (Mic 16)", a)
+    a, fund_f, fund_w = main_freqs(f, weights, target_freqs,180)
 
     mic16_freqs = a
     mic16_eigenloudness = red
@@ -208,6 +157,9 @@ for flight_number in range(1, 6):
     mic16_f = f
     mic16_close = timeof
     mic16_var = variance
+
+    compromise = np.around((mic16_freqs + mic12_freqs)/2,1)
+    print(f"Compromise Drone {flight_number}: {compromise}")
 
     """
     Plot Graphs
@@ -232,19 +184,6 @@ for flight_number in range(1, 6):
     ax[0].grid(linestyle='-', which='major', linewidth=0.9)
     ax[0].grid(linestyle=':', which='minor', linewidth=0.5)
 
-    # ax[1].minorticks_on()
-    # ax[1].pcolormesh(t, f, Sxx, cmap='jet')
-    # ax[1].set_ylabel('Frequency [Hz]',fontsize=10)
-    # ax[1].set_xlabel('Time [sec]',fontsize=10)
-    # ax[1].set_xlim(t[0], t[-1])
-    # mappable = ax[1].pcolormesh(t, f, Sxx, cmap='jet')
-    # cbar = fig.colorbar(mappable, ax=ax[1], label="Power [dB/Hz]", orientation="vertical")
-    # cbar.ax.tick_params(labelsize=10)
-    # ax[1].set_yscale("log")
-    # ax[1].axis(ymin=10, ymax=500)
-
-    # (Var: {round(float(mic16_var) * 100, 1)} % )
-
     var1 = np.asarray([round(float(mic16_var) * 100, 1)])
     var2 = np.asarray([round(float(mic12_var) * 100, 1)])
     data1 = np.concatenate((mic16_freqs, var1))
@@ -265,6 +204,6 @@ for flight_number in range(1, 6):
 
     plt.subplots_adjust(hspace=0.1)
     plt.tight_layout()
-    plt.savefig(fname=f"Drone {flight_number} PCA + K-Means Combined", dpi=900)
+    plt.savefig(fname=f"Drone {flight_number} PCA + K-Means Combined (p=175)", dpi=900)
 
     plt.show()

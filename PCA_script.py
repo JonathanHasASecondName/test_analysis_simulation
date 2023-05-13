@@ -7,6 +7,20 @@ import numpy.random as rd
 import pywt
 
 """
+-------------------------------------
+PCA Analysis Script by Gerard Mendoza Ferrandis
+-------------------------------------
+The following code produces the eigenloudness plots for every drone flight and every microphone.
+The characteristic frequencies are also obtain through an iterative algorithm. This algorithm attempts group together
+frequencies that are outlined as "important" but that may correspond to the same peak.
+
+An improved version of this code can be found on "clustering_script.py", where this frequency analysis is carried out
+using k-means clustering and also attempts to reconcile information obtained by moth microphones to more accurately
+determine the frequencies.
+"""
+
+
+"""
 Inputs & Functions
 """
 # Inputs
