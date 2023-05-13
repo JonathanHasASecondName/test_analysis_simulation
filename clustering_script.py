@@ -42,36 +42,6 @@ def preprocess_data(data):
     data = np.nan_to_num(data)
     return data
 
-
-def masking(freqs, tol=0.06):
-    mask = []
-    for i in range(len(freqs) - 1):
-        r = abs(round((freqs[i + 1] - freqs[i]) / freqs[i + 1], 3))
-        if r <= tol:
-            mask.append(0)
-        if r > tol and (i == 0 or mask[i - 1] != 0):
-            mask.append(2)
-        if r > tol and mask[i - 1] == 0:
-            mask.append(1)
-    return mask
-
-
-def cropping(freqs):
-    mask = masking(freqs)
-    new = []
-    for i in range(len(mask)):
-        if mask[i] == 0:  # append average
-            new.append((freqs[i] + freqs[i + 1]) / 2)
-        if mask[i] == 1:
-            if i == len(mask) - 1:
-                new.append(freqs[i + 1])
-        if mask[i] == 2:  # append itself
-            new.append(freqs[i])
-            if i == len(mask) - 1:
-                new.append(freqs[i + 1])
-    return new
-
-
 def obtain(mic, flight_number):
     if mic == 12:
         main_file = f"newdata/Drone{flight_number}_Flight1/Array_D{flight_number}F1.csv"
@@ -90,14 +60,6 @@ def obtain(mic, flight_number):
     Sxx = Sxx[:n_frequencies, :]
 
     return f, t, Sxx_legacy, Sxx
-
-
-def denoise(file, k):
-    threshold = np.std(file) * np.sqrt(2 * np.log(len(file)))
-    coeffs = pywt.wavedec(file, 'db4', mode='per')
-    coeffs[1:] = (pywt.threshold(i, value=k * threshold, mode='soft') for i in coeffs[1:])
-    return pywt.waverec(coeffs, 'db4', mode='per')
-
 
 def pca_data(file, n=1):
     pca = PCA(n)
