@@ -1,3 +1,16 @@
+"""
+-------------------------------------
+The PCA-Kmeans "Eigenloudness" & Frequency Analysis Method
+-------------------------------------
+by Gerard Mendoza Ferrandis
+
+The following code produces the eigenloudness plots for every drone flight and every microphone.
+The characteristic frequencies are obtained by clustering the frequencies that were deemed
+more relevant by the PCA analysis. The frequency table breaks down what are the most important
+frequencies according to each microphone, and the common ground using information from the cluster
+of microphones (here only two microphones).
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -117,9 +130,19 @@ def main_freqs(f, weights, target_freqs, probe=200):
     return a, fund_f, fund_w
 
 
+def reconcile(f1, f2, target_freqs):
+    f_both = np.concatenate((f1, f2)).reshape(-1, 1)
+    kmeans = KMeans(n_clusters=int(target_freqs))
+    kmeans.fit(f_both)
+    a = np.sort(np.around(np.asarray(kmeans.cluster_centers_.T[0]), 1))
+    return a
+
+
 """
 Read, Produce & Truncate Data
 """
+
+s = 150  # sampling constant
 
 for flight_number in range(1, 6):
     ### ---- MICROPHONE 12 ---- ###
@@ -130,7 +153,7 @@ for flight_number in range(1, 6):
 
     red, maxpoint, timeof = postprocessing(red)
 
-    a, fund_f, fund_w = main_freqs(f, weights, target_freqs,180)
+    a, fund_f, fund_w = main_freqs(f, weights, target_freqs, s)
 
     mic12_freqs = a
     mic12_eigenloudness = red
@@ -148,7 +171,7 @@ for flight_number in range(1, 6):
 
     red, maxpoint, timeof = postprocessing(red)
 
-    a, fund_f, fund_w = main_freqs(f, weights, target_freqs,180)
+    a, fund_f, fund_w = main_freqs(f, weights, target_freqs, s)
 
     mic16_freqs = a
     mic16_eigenloudness = red
@@ -158,8 +181,8 @@ for flight_number in range(1, 6):
     mic16_close = timeof
     mic16_var = variance
 
-    compromise = np.around((mic16_freqs + mic12_freqs)/2,1)
-    print(f"Compromise Drone {flight_number}: {compromise}")
+    f_rec = reconcile(mic16_freqs, mic12_freqs, target_freqs)
+    print(f"Drone {flight_number}\n Mic 12: {mic12_freqs}\n Mic 16: {mic16_freqs}\n Comp: {f_rec}")
 
     """
     Plot Graphs
@@ -186,10 +209,12 @@ for flight_number in range(1, 6):
 
     var1 = np.asarray([round(float(mic16_var) * 100, 1)])
     var2 = np.asarray([round(float(mic12_var) * 100, 1)])
+    var3 = np.asarray(["-"])
     data1 = np.concatenate((mic16_freqs, var1))
     data2 = np.concatenate((mic12_freqs, var2))
-    table_data = [data1, data2]
-    row_labels = ["Mic 16", "Mic 12"]
+    data3 = np.concatenate((f_rec, var3))
+    table_data = [data1, data2, data3]
+    row_labels = ["Mic 16", "Mic 12", "Cluster"]
     col_labels = [f"$f_{i + 1}$ [Hz]" for i in range(len(mic12_freqs))] + ["Var [%]"]
     ax[1].axis("off")
     table = ax[1].table(cellText=table_data,
@@ -200,10 +225,10 @@ for flight_number in range(1, 6):
     table.auto_set_font_size(True)
     table.set_fontsize(10)
     table.scale(1, 1.5)
-    ax[1].set_title(f"Drone {flight_number} Characteristic Frequency Analysis", y=0.8)
+    ax[1].set_title(f"Drone {flight_number} Characteristic Frequency Analysis", y=0.9)
 
     plt.subplots_adjust(hspace=0.1)
     plt.tight_layout()
-    plt.savefig(fname=f"Drone {flight_number} PCA + K-Means Combined (p=175)", dpi=900)
+    plt.savefig(fname=f"Drone {flight_number} PCA + K-Means Combined (s={s})", dpi=900)
 
     plt.show()

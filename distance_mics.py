@@ -1,3 +1,17 @@
+"""
+-------------------------------------
+Basic Drone Distance Script
+-------------------------------------
+by Gerard Mendoza Ferrandis
+
+The following code generates a plot of the difference in decibels between both microphones with time.
+This allows us to see when the drone is closest to each microphone, and thus enables us to know when the drone crosses
+the imaginary line that divides the "closeneess" to each microphone, so it can give an very simple idea on the trajectory
+of the drone.
+
+Unused for the report.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd

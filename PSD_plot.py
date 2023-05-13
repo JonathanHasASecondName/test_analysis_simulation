@@ -1,8 +1,11 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Mar 13 11:30:19 2023
+-------------------------------------
+PSD Plot Script
+-------------------------------------
+by Roeland Oosterveld
 
-@author: ooste
+The following code produces the power spectral density (PSD) graphs for every drone flight.
+It outlines the main frequency and its harmonics.
 """
 
 from matplotlib import pyplot as plt

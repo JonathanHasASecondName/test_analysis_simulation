@@ -1,9 +1,12 @@
-# -*- coding: utf-8 -*-
 """
-Created on Thu Mar 16 10:11:02 2023
+-------------------------------------
+SPL Plot Script
+-------------------------------------
+by Roeland Oosterveld
 
-@author: ooste
+The following code produces the sound pressure level (SPL) graphs for every drone flight.
 """
+
 import os
 from matplotlib import pyplot as plt
 import numpy as np

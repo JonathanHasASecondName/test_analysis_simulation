@@ -1,15 +1,9 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from scipy import signal
-from sklearn.decomposition import PCA
-import numpy.random as rd
-import pywt
-
 """
 -------------------------------------
-PCA Analysis Script by Gerard Mendoza Ferrandis
+PCA Analysis Script
 -------------------------------------
+by Gerard Mendoza Ferrandis
+
 The following code produces the eigenloudness plots for every drone flight and every microphone.
 The characteristic frequencies are also obtain through an iterative algorithm. This algorithm attempts group together
 frequencies that are outlined as "important" but that may correspond to the same peak.
@@ -19,6 +13,13 @@ using k-means clustering and also attempts to reconcile information obtained by 
 determine the frequencies.
 """
 
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from scipy import signal
+from sklearn.decomposition import PCA
+import numpy.random as rd
+import pywt
 
 """
 Inputs & Functions
@@ -322,6 +323,6 @@ for flight_number in range(1, 6):
 
     plt.subplots_adjust(hspace=0.1)
     plt.tight_layout()
-    #plt.savefig(fname=f"Drone {flight_number} PCA Combined", dpi=900)
+    # plt.savefig(fname=f"Drone {flight_number} PCA Combined", dpi=900)
 
     plt.show()
