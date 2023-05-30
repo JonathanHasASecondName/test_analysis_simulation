@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import signal
 from sklearn.decomposition import PCA
-import pywt
 from sklearn.cluster import KMeans
 
 """
