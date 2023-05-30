@@ -146,8 +146,7 @@ for flight_number in range(1, 6):
     print(f"Drone {flight_number}\n Mic 12: {mic12_freqs}\n Mic 16: {mic16_freqs}\n Comp: {f_rec}")
 
     """
-    Plot Graphs
-    """
+    Plot Graphs (Old)
 
     fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3, 2]})
 
@@ -191,5 +190,28 @@ for flight_number in range(1, 6):
     plt.subplots_adjust(hspace=0.1)
     plt.tight_layout()
     plt.savefig(fname=f"Drone {flight_number} PCA + K-Means Combined (s={s})", dpi=900)
+
+    plt.show()
+    """
+
+    plt.subplot(1,1,1).minorticks_on()
+
+    #plt.title(f"Drone {flight_number} Eigenloudness vs Time")
+    plt.plot(mic16_t, mic16_eigenloudness, color="blue", linewidth=0.6)
+    plt.plot(mic12_t, mic12_eigenloudness, color="red", linewidth=0.6)
+    plt.ylabel('Eigenloudness [dB]', fontsize=10)
+    plt.xlabel('Time [sec]', fontsize=10)
+    plt.vlines(mic16_close, np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95,
+                 label="Mic 16: $t_{ca}$=" + f"{round(float(mic16_close), 1)} s", colors="blue", linewidth=0.5)
+    plt.vlines(mic12_close, np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95,
+                 label="Mic 12: $t_{ca}$=" + f"{round(float(mic12_close), 1)} s", colors="red", linewidth=0.5)
+    plt.ylim(np.min(mic16_eigenloudness) * 1.05, np.max(mic16_eigenloudness) * 0.95)
+    plt.xlim(t[0], t[-1])
+    plt.legend()
+    plt.grid(linestyle='-', which='major', linewidth=0.9)
+    plt.grid(linestyle=':', which='minor', linewidth=0.5)
+
+    plt.tight_layout()
+    plt.savefig(fname=f"Drone {flight_number} PCA Only (s={s})", dpi=900)
 
     plt.show()
